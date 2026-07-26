@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 895" role="img" aria-labelledby="title description">
+<title id="title">Shot locations for StatsBomb match 3773497</title>
+<desc id="description">Both teams attack from x equals zero toward x equals 120.</desc>
+<style>
+rect,line,circle:not(.shot){fill:none;stroke:#475569;stroke-width:2}
+.shot{stroke:#fff;stroke-width:2;opacity:.85}
+text{font:18px sans-serif;fill:#0f172a}
+</style>
+<rect x="0" y="0" width="100%" height="100%" fill="#f8fafc" />
+<rect x="30" y="30" width="1200" height="800" />
+<line x1="630" y1="30" x2="630" y2="830" />
+<line x1="210" y1="210" x2="210" y2="650" />
+<line x1="30" y1="210" x2="210" y2="210" />
+<line x1="30" y1="650" x2="210" y2="650" />
+<line x1="1050" y1="210" x2="1050" y2="650" />
+<line x1="1050" y1="210" x2="1230" y2="210" />
+<line x1="1050" y1="650" x2="1230" y2="650" />
+<circle cx="630" cy="430" r="100" />
+<text x="30" y="880">Barcelona: #2563eb · Real Madrid: #dc2626</text>
+<circle class="shot" cx="1049.0" cy="611.0" r="7" fill="#2563eb"><title>Barcelona, period 1, minute 9</title></circle>
+<circle class="shot" cx="1168.0" cy="484.0" r="7" fill="#dc2626"><title>Real Madrid, period 1, minute 12</title></circle>
+<circle class="shot" cx="1191.0" cy="416.0" r="7" fill="#2563eb"><title>Barcelona, period 1, minute 15</title></circle>
+<circle class="shot" cx="1061.0" cy="385.0" r="7" fill="#dc2626"><title>Real Madrid, period 1, minute 20</title></circle>
+<circle class="shot" cx="939.0" cy="375.0" r="7" fill="#dc2626"><title>Real Madrid, period 1, minute 23</title></circle>
+<circle class="shot" cx="1040.0" cy="302.0" r="7" fill="#dc2626"><title>Real Madrid, period 1, minute 27</title></circle>
+<circle class="shot" cx="1103.0" cy="564.0" r="7" fill="#dc2626"><title>Real Madrid, period 1, minute 33</title></circle>
+<circle class="shot" cx="1089.0" cy="454.0" r="7" fill="#dc2626"><title>Real Madrid, period 1, minute 33</title></circle>
+<circle class="shot" cx="992.0" cy="509.0" r="7" fill="#dc2626"><title>Real Madrid, period 1, minute 34</title></circle>
+<circle class="shot" cx="1116.0" cy="444.0" r="7" fill="#dc2626"><title>Real Madrid, period 1, minute 34</title></circle>
+<circle class="shot" cx="979.0" cy="498.0" r="7" fill="#2563eb"><title>Barcelona, period 1, minute 36</title></circle>
+<circle class="shot" cx="1028.0" cy="368.0" r="7" fill="#2563eb"><title>Barcelona, period 1, minute 40</title></circle>
+<circle class="shot" cx="1158.0" cy="276.0" r="7" fill="#2563eb"><title>Barcelona, period 1, minute 44</title></circle>
+<circle class="shot" cx="1200.0" cy="502.0" r="7" fill="#2563eb"><title>Barcelona, period 1, minute 47</title></circle>
+<circle class="shot" cx="1171.0" cy="357.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 47</title></circle>
+<circle class="shot" cx="968.0" cy="448.0" r="7" fill="#dc2626"><title>Real Madrid, period 2, minute 52</title></circle>
+<circle class="shot" cx="1043.0" cy="336.0" r="7" fill="#dc2626"><title>Real Madrid, period 2, minute 56</title></circle>
+<circle class="shot" cx="1136.0" cy="428.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 59</title></circle>
+<circle class="shot" cx="935.0" cy="385.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 64</title></circle>
+<circle class="shot" cx="1152.0" cy="461.0" r="7" fill="#dc2626"><title>Real Madrid, period 2, minute 67</title></circle>
+<circle class="shot" cx="1002.0" cy="379.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 69</title></circle>
+<circle class="shot" cx="1166.0" cy="595.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 70</title></circle>
+<circle class="shot" cx="1151.0" cy="359.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 74</title></circle>
+<circle class="shot" cx="1066.0" cy="434.0" r="7" fill="#dc2626"><title>Real Madrid, period 2, minute 76</title></circle>
+<circle class="shot" cx="1052.0" cy="325.0" r="7" fill="#dc2626"><title>Real Madrid, period 2, minute 76</title></circle>
+<circle class="shot" cx="1053.0" cy="522.0" r="7" fill="#dc2626"><title>Real Madrid, period 2, minute 81</title></circle>
+<circle class="shot" cx="1013.0" cy="555.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 90</title></circle>
+<circle class="shot" cx="1043.0" cy="321.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 91</title></circle>
+<circle class="shot" cx="1124.0" cy="342.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 92</title></circle>
+<circle class="shot" cx="1111.0" cy="421.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 93</title></circle>
+<circle class="shot" cx="1050.0" cy="441.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 93</title></circle>
+<circle class="shot" cx="1036.0" cy="362.0" r="7" fill="#2563eb"><title>Barcelona, period 2, minute 93</title></circle>
+</svg>

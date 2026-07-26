@@ -15,6 +15,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "hypothesis>=6.161.5",
     "pyright>=1.1.411",
     "pytest>=9.1.1",
     "ruff>=0.16.0",
@@ -22,10 +23,13 @@ dev = [
 
 [tool.pytest.ini_options]
 addopts = ["--strict-config", "--strict-markers"]
+markers = [
+    "contract: checks assumptions against locally downloaded provider data",
+]
 testpaths = ["tests"]
 
 [tool.pyright]
-include = ["src", "tests"]
+include = ["scripts", "src", "tests"]
 pythonVersion = "3.13"
 typeCheckingMode = "strict"
 venv = ".venv"

@@ -7,7 +7,7 @@ todos:
     status: completed
   - id: geometry
     content: "Increment 2: domain/ids.py and domain/geometry.py with Point, Pitch, distance/angle to opponent goal. Hypothesis property tests plus a data contract test asserting the verified coordinate orientation against the real match file."
-    status: pending
+    status: completed
   - id: events
     content: "Increment 3: domain/events.py with a deliberately small ActionType enum, Outcome, and the frozen Event record. Explain wide-record vs tagged-union trade-off and what the optional fields cost."
     status: pending

@@ -1,7 +1,7 @@
 # Regista
 
 Regista turns soccer match events into explainable, position-aware player ratings.
-The current implementation is the first foundation increment of the
+The current implementation includes the project foundation and domain geometry from the
 [rating-engine plan](regista_rating_engine_156f9116.plan.md).
 
 ## Development
@@ -18,6 +18,9 @@ uv run pyright
 
 Provider data belongs under `data/` and is intentionally excluded from version
 control.
+
+The coordinate contract expects the StatsBomb open-data repository at
+`data/statsbomb/`. It skips when that local provider fixture is unavailable.
 
 ## Architecture
 

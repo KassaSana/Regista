@@ -10,6 +10,7 @@ wheels/
 .venv/
 
 # Tool caches
+.hypothesis/
 .pytest_cache/
 .ruff_cache/
 .uv-cache/
