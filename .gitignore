@@ -17,3 +17,7 @@ wheels/
 
 # Local StatsBomb data is downloaded, not versioned
 data/
+
+# Databases built from provider data are never committed
+*.duckdb
+*.duckdb.wal

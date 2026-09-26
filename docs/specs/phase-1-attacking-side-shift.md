@@ -11,7 +11,8 @@ The card links to the supporting event identifiers for both the recent window an
 
 | Term | Definition |
 |---|---|
-| Final-third entry | A completed pass or a carry that starts at x < 80 and ends at x ≥ 80, in the acting team's attacking frame. |
+| Final-third entry | An **open-play** completed pass or a carry that starts at x < 80 and ends at x ≥ 80, in the acting team's attacking frame. |
+| Open play | Decided per event from the pass type. Corner, Free Kick, Throw-in, Goal Kick, and Kick Off passes are set pieces and excluded. Recovery and Interception passes count. Carries always count. The possession-level `play_pattern` is never used: it labels whole possessions and may be assigned with hindsight. A contract test must pin the pass type values. |
 | Completed pass | A pass whose provider record has no outcome. (StatsBomb records an outcome only for unsuccessful passes. A contract test must pin this.) |
 | Carry | Every carry counts as completed. |
 | Channel | Taken from the entry's **end** location. Left: y < 80/3. Center: 80/3 ≤ y ≤ 160/3. Right: y > 160/3. Which side of y is the team's "left" is **pending a contract test**. |
@@ -25,7 +26,7 @@ For one team, at the current replay position, the detector fires when all of the
 2. The baseline has at least **12** entries.
 3. One channel's share in the recent window exceeds its share in the baseline by at least **25 percentage points**.
 
-If more than one channel qualifies, report the channel with the largest increase.
+If more than one channel qualifies, report the channel with the largest increase. Only increases produce a card; the channels that lost share appear in the card as supporting evidence. An increase split across two channels that reaches the threshold in neither produces no card.
 
 ## Suppression
 After a card fires for a team, that team produces no side-shift card for **10 minutes** of match clock, whatever the channel. The cooldown does not carry across a period boundary.
@@ -42,11 +43,12 @@ After a card fires for a team, that team produces no side-shift card for **10 mi
 - Minimum-count case: a large share change with too few entries produces no card.
 - Period case: a window never includes events from the previous period.
 - Real-match golden snapshot for match 3773497, reviewed for correctness, not tuned toward.
-- Contract tests: completion status (pass outcome absent means completed) and channel orientation.
+- Set-piece case: a qualifying shift made only of set-piece passes produces no card.
+- Contract tests: completion status (pass outcome absent means completed), pass type values, and channel orientation.
 
-## Open questions (owned by Kassahun)
-- `TODO(Kassahun)`: Do set pieces (free kicks, corners, throw-ins) count as entries, or only open play?
-- `TODO(Kassahun)`: Should a sharp **decrease** in a channel also fire, or only increases?
+## Decisions (Kassahun, 2026-09-26)
+- Set pieces are excluded. Open-play and set-piece entry counts may be kept separately later, but this detector uses open play only.
+- Only increases produce cards; decreases are supporting evidence. This avoids two cards describing the same shift.
 
 ## Known limitations
 - Share-based rules favor the team with more of the ball. In a rough check of match 3773497, Real Madrid never exceeded 9 entries in any 10-minute window, so the minimums make them nearly invisible to this detector. Record this; do not lower the minimums to fix it on this match.
