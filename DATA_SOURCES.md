@@ -4,7 +4,7 @@ Regista's code is public. Provider data is not: it is downloaded locally into `d
 
 ## StatsBomb Open Data
 
-- Source: https://github.com/statsbomb/open-data
+- Source: https://github.com/hudl/open-data (the old `github.com/statsbomb/open-data` address redirects here).
 - Terms: *StatsBomb Public Data User Agreement* (`LICENSE.pdf` in that repository, last updated 8 September 2023).
 
 ### What the agreement says, and how Regista complies
@@ -16,12 +16,20 @@ Regista's code is public. Provider data is not: it is downloaded locally into `d
 | 1.2.2 | Do not commercially exploit the data **or any analysis derived from it**. | No paid product, subscription, or commercial API. Anything tuned or trained on this data (thresholds, an expected-threat grid) must be re-derived from licensed data before any commercial use. ✅ |
 | 1.2.4 | Do not publish material that might be defamatory or damaging to any individual or organisation. | Cards describe observations neutrally, never intent or blame (AGENTS.md). ✅ |
 | 1.4 | Accredit any publication of analysis with the StatsBomb brand logo. | Any published write-up, screenshot, or chart shows the StatsBomb logo plus "Data: StatsBomb". The README carries the text credit. Before the first public push, add the logo from StatsBomb's Media Pack (https://statsbomb.com/media-pack/) to the README, because `docs/assets/3773497-shot-locations.svg` is derived analysis. ⚠️ Logo pending until publishing |
-| 2.2 | StatsBomb asks users to register their name and email at https://www.statsbomb.com/resource-centre. | ⚠️ Kassahun to register. |
+| 2.2 | StatsBomb asks users to register their name and email at https://www.statsbomb.com/resource-centre. | That link currently routes to Hudl's commercial StatsBomb product page, with no open-data registration form (see note below). Not applicable until a working form exists; do not use the sales form. |
 | 7 | The data is StatsBomb's property; no transfer, distribution, or licensing without written consent. | Covered by the 1.2.1 practices above. ✅ |
 | 6.1 | StatsBomb may suspend access at any time. | Providers stay behind adapters; the local copy is for development only. |
 
-> **Agreement text checked against Regista's planned use on 2026-09-26: compatible, with the two ⚠️ items to complete before publishing.**
-> **License terms confirmed by Kassahun: ☑** (2026-09-26, accepting the review above)
+Agreement text checked against Regista's planned use on 2026-09-26: compatible.
+
+### Compliance checklist
+- [x] StatsBomb Public Data User Agreement reviewed (confirmed by Kassahun, 2026-09-26)
+- [x] Open data source documented
+- [x] Attribution requirement documented
+- [ ] StatsBomb logo added before publishing StatsBomb-derived analysis
+- [ ] Commercial rights obtained before monetization
+
+> **Note:** StatsBomb's current open-data documentation still references `statsbomb.com/resource-centre` for registration, but that URL currently routes into Hudl's commercial StatsBomb site (checked 2026-09-26: it lands on `hudl.com/en_gb/products/statsbomb`) rather than an obvious open-data registration form. Regista uses the open data under the published agreement and does not fill in the sales form.
 
 ## What is public and what is not
 

@@ -29,7 +29,7 @@ The coordinate contract expects the StatsBomb open-data repository at
 StatsBomb open data is used for development only, with attribution, and not
 commercially. See [DATA_SOURCES.md](DATA_SOURCES.md).
 
-Data: StatsBomb (https://github.com/statsbomb/open-data).
+Data: StatsBomb (https://github.com/hudl/open-data).
 
 ## Architecture
 
