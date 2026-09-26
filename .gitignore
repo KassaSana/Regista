@@ -21,3 +21,6 @@ data/
 # Databases built from provider data are never committed
 *.duckdb
 *.duckdb.wal
+
+# Generated replay exports
+out/

@@ -3,6 +3,7 @@
 ## Scope discipline
 - Work only on the current phase in ROADMAP.md. Stop and check in after each increment.
 - Do not add features, dependencies, or abstractions for future phases.
+- Stack choices live in [docs/STACK.md](docs/STACK.md); changing one is a recorded decision, not a drive-by.
 
 ## Working style
 - Explain the reasoning behind each step.

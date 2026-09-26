@@ -1,0 +1,59 @@
+# Regista Technology Stack
+
+This is the record of which languages, tools, and approaches Regista uses, when each one arrives, and why. Changing a choice here is a recorded decision (see [AGENTS.md](../AGENTS.md)).
+
+## Principles
+- **Two languages, split along one line.**
+  - **Python** computes everything: loading, normalization, replay, detectors, templates, models.
+  - **TypeScript** only displays results.
+- **One contract between them.** Python exports a versioned JSON file per match (the replay export), described by a JSON Schema. The viewer never reads provider data and never decides anything ("detectors decide; templates render").
+- **Dependencies arrive with the phase that needs them.** Nothing is installed early. Domain code stays standard-library only.
+
+## Stack by layer
+
+| Layer | Choice | Arrives | Why |
+|---|---|---|---|
+| Engine language | Python 3.13 | Now | The data and machine-learning ecosystem |
+| Environment and packaging | uv | Now | Pins Python and the lockfile |
+| Lint and format (Python) | Ruff, plus an edit hook for agents | Now | One fast tool |
+| Types (Python) | Pyright, strict mode | Now | Protocols and domain types carry the design |
+| Tests | pytest + Hypothesis | Now | Examples plus property tests (for example, prefix invariance) |
+| Domain model | Standard-library frozen dataclasses, enums, `NewType` identifiers, `Protocol` ports | Phase 1 | No third-party imports in the domain |
+| Provider parsing | Standard-library `json` + `TypedDict`, validated by hand in the adapter | Phase 1 | Only a few fields; Pydantic only if parsing grows |
+| Replay engine | A plain Python iterator ordered by provider `index`. Each detector is an incremental object that observes one event at a time and returns cards. | Phase 1 | Prefix invariance holds by construction, and the same code can later run live |
+| Command-line interface | argparse in `cli.py`, the composition root | Now / Phase 1 | Already in place; `regista replay --match <identifier>` |
+| Data download | A standard-library `urllib` script writing into `data/` | Phase 2 | No HTTP dependency needed |
+| Exploration across matches | DuckDB: the command-line tool now, the Python package as a development dependency in Phase 2 | Phase 2 | SQL over dozens of matches without building a database layer |
+| Replay export | One JSON file per match (cards, counts, evidence event identifiers and locations), described by `schemas/replay.schema.json` | Phase 2 | The contract between Python and TypeScript |
+| Viewer | TypeScript (strict) + Vite + React | Phase 2 | Chosen for learning and portfolio value; React is the most widely used |
+| Pitch drawing in the viewer | Hand-written SVG components, no d3 | Phase 2 | A pitch is rectangles and arcs; a good learning exercise |
+| Viewer types | Generated from the JSON Schema (`json-schema-to-typescript`) | Phase 2 | One source of truth for the contract |
+| Viewer lint, format, tests | Biome + Vitest | Phase 2 | Biome is the TypeScript counterpart of Ruff |
+| Browser checks | Playwright | Phase 2 | Screenshots and one end-to-end test |
+| Static figures for write-ups | mplsoccer + matplotlib | Phase 2 | Pitch maps carrying the StatsBomb logo |
+| Continuous integration | GitHub Actions: ruff, ruff format check, pyright, pytest, then the viewer build and tests | When a GitHub remote exists | Nothing to run it on yet |
+| Modeling | NumPy for our own expected-threat implementation; scikit-learn `HistGradientBoostingClassifier` for possession value. `socceraction` only in a throwaway Python 3.12 environment for cross-checks. | Phase 4 | Learning first; no Python downgrade |
+| Context store | A `source_claims` table in DuckDB; Wikidata through SPARQL over `urllib` | Phase 5 | Same engine as exploration |
+| Tracking and 360 data | kloppy, inside an adapter only | Phase 6 | Standard loaders for SkillCorner and StatsBomb 360 |
+
+## Explicitly not using
+- pandas in the domain.
+- Spring Boot, Java, or PostgreSQL. DuckDB covers storage at this scale.
+- Streamlit.
+- A language model in the product. It remains an optional branch in the roadmap.
+- statsbombpy: not needed, and its license is unclear.
+- A Python downgrade.
+
+## Repository layout (target by Phase 2)
+```
+src/regista/        Python engine (domain/, adapters/, detectors/, cli.py)
+tests/              unit/, contract/ (synthetic fixtures only)
+schemas/            replay.schema.json (the Python ↔ TypeScript contract)
+viewer/             TypeScript + React + Vite app that reads exported JSON
+scripts/            download and plotting scripts
+data/  out/         git-ignored: raw provider files and generated exports
+```
+
+## Prerequisites and constraints
+- Node is currently 20.9.0, which is too old for current Vite. Install Node 24 LTS (Homebrew or `fnm`) at the start of Phase 2.
+- A public demo of the viewer follows [DATA_SOURCES.md](../DATA_SOURCES.md): it exports derived cards only, never raw provider files, and shows the StatsBomb logo.
