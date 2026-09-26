@@ -12,7 +12,7 @@ def build_parser() -> argparse.ArgumentParser:
     """Build the command-line interface without performing any I/O."""
     parser = argparse.ArgumentParser(
         prog="regista",
-        description="Explainable soccer player ratings from event data.",
+        description="Evidence-backed soccer match insights from event data.",
     )
     parser.add_argument(
         "--version",

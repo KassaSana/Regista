@@ -13,4 +13,4 @@ def test_empty_command_prints_help(capsys: pytest.CaptureFixture[str]) -> None:
     exit_code = main([])
 
     assert exit_code == 0
-    assert "Explainable soccer player ratings" in capsys.readouterr().out
+    assert "Evidence-backed soccer match insights" in capsys.readouterr().out
