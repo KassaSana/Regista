@@ -30,7 +30,10 @@
 - The prefix-invariance test must always pass.
 
 ## Data rules
-- StatsBomb open data: development only, attribution required, no commercial use.
+- StatsBomb Open Data is used only for non-commercial research and portfolio work unless I record separate written commercial rights. Do not build paid access, advertising, sponsorship, client delivery, or any other monetization on it.
+- Never commit or publicly expose StatsBomb raw datasets, provider payloads, or databases containing them, including full event exports in a different schema. Public tests use synthetic fixtures.
+- Public StatsBomb-derived analysis, cards, visualizations, and screenshots say "Data: StatsBomb" and carry the official logo, inside anything that can circulate on its own.
+- Before a public release or any monetization, stop and have me re-check the license, registration process, and attribution guidance (see [DATA_SOURCES.md](DATA_SOURCES.md)).
 - Never scrape Transfermarkt or FBref.
 - No player photos, club crests, or league logos. Provider attribution that a license requires (for example "Data: StatsBomb" with the StatsBomb logo) is allowed.
 - Never commit raw provider files or databases built from them. See [DATA_SOURCES.md](DATA_SOURCES.md).
@@ -38,6 +41,7 @@
 
 ## Ownership (never invent these)
 I own: labeled evaluation moments, curated player context and injury records, source claims, and license confirmations. If one is needed, leave a clearly marked placeholder and ask.
+- Agents may research and summarize license terms, but must never mark a personal confirmation, review, registration, or acceptance as done on my behalf, even when asked to "fill the gaps." Leave the box unchecked and tell me.
 
 ## Testing
 - Every detector ships with a test for a firing case, a quiet case, and a suppression case.

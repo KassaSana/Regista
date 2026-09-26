@@ -26,10 +26,23 @@ control.
 
 The coordinate contract expects the StatsBomb open-data repository at
 `data/statsbomb/`. It skips when that local provider fixture is unavailable.
-StatsBomb open data is used for development only, with attribution, and not
-commercially. See [DATA_SOURCES.md](DATA_SOURCES.md).
 
-Data: StatsBomb (https://github.com/hudl/open-data).
+## Data attribution
+
+Regista is currently a non-commercial research and portfolio project.
+
+Example match data used for research and analysis is sourced from
+[StatsBomb Open Data](https://github.com/hudl/open-data) and is used subject to
+the StatsBomb Public Data User Agreement.
+
+Data: StatsBomb.
+
+This repository does not redistribute StatsBomb raw data. To obtain the Open
+Data, use StatsBomb's official repository. StatsBomb is the data source;
+Regista's derived metrics, detectors, visualizations, and commentary are
+produced by this project. Regista is an independent project and is not
+affiliated with or endorsed by StatsBomb or Hudl. See
+[DATA_SOURCES.md](DATA_SOURCES.md).
 
 ## Architecture
 

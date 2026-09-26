@@ -56,4 +56,4 @@ data/  out/         git-ignored: raw provider files and generated exports
 
 ## Prerequisites and constraints
 - Node is currently 20.9.0, which is too old for current Vite. Install Node 24 LTS (Homebrew or `fnm`) at the start of Phase 2.
-- A public demo of the viewer follows [DATA_SOURCES.md](../DATA_SOURCES.md): it exports derived cards only, never raw provider files, and shows the StatsBomb logo.
+- A public demo of the viewer follows [DATA_SOURCES.md](../DATA_SOURCES.md): it publishes derived insights and aggregates with a limited set of evidence per card, never raw provider files or a near-complete event export, and every card or image carries "Data: StatsBomb" and the official logo.
