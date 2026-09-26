@@ -48,6 +48,6 @@ Record metric definitions here as they are decided. Full detector specifications
 - Phase 1 detector: [docs/specs/phase-1-attacking-side-shift.md](docs/specs/phase-1-attacking-side-shift.md) (status: initial defaults to evaluate).
 - Final-third entry: an open-play completed pass or carry starting before x = 80 and ending at or beyond x = 80 (attacking frame).
 - Open play: decided per event from the pass type. Corner, Free Kick, Throw-in, Goal Kick, and Kick Off passes are set pieces and excluded. Recovery and Interception passes are open play. Carries always count. Never use the possession-level `play_pattern` for this: it labels whole possessions and may be assigned with hindsight.
-- Channels: from the entry's end location; left y < 80/3, center 80/3 ≤ y ≤ 160/3, right y > 160/3. Which side is "left" is to be confirmed by the contract test.
+- Channels: from the entry's end location; left y < 80/3, center 80/3 ≤ y ≤ 160/3, right y > 160/3. Low y is the acting team's left (checked on match 3773497; pinned by a contract test).
 - Channel shift: only an increase in a channel's share produces a candidate card. Decreases appear only as supporting evidence. An increase split across two channels that reaches the threshold in neither produces no card.
 - Field tilt (Phase 2 metric): a team's completed open-play passes starting at x ≥ 80 in its own attacking frame, divided by both teams' such passes in the same window. No value when the combined count is below a minimum (set in Phase 2). Whether it becomes its own detector depends on replay evaluation.

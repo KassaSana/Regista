@@ -15,7 +15,7 @@ The card links to the supporting event identifiers for both the recent window an
 | Open play | Decided per event from the pass type. Corner, Free Kick, Throw-in, Goal Kick, and Kick Off passes are set pieces and excluded. Recovery and Interception passes count. Carries always count. The possession-level `play_pattern` is never used: it labels whole possessions and may be assigned with hindsight. A contract test must pin the pass type values. |
 | Completed pass | A pass whose provider record has no outcome. (StatsBomb records an outcome only for unsuccessful passes. A contract test must pin this.) |
 | Carry | Every carry counts as completed. |
-| Channel | Taken from the entry's **end** location. Left: y < 80/3. Center: 80/3 ≤ y ≤ 160/3. Right: y > 160/3. Which side of y is the team's "left" is **pending a contract test**. |
+| Channel | Taken from the entry's **end** location. Left: y < 80/3. Center: 80/3 ≤ y ≤ 160/3. Right: y > 160/3. Low y is the acting team's left: in match 3773497, left-sided defenders average y ≈ 11–13 and right-sided ones y ≈ 59–68. A contract test pins this in Increment B. |
 | Match clock | Provider minute and second. Every calculation also carries the period. |
 | Recent window | The team's entries in the last 10 minutes of the **current period**. A window never crosses a period boundary, so the detector cannot fire until 10 minutes into a period. This avoids the overlap between first-half stoppage time and the start of the second half. |
 | Baseline | All of the team's entries in the match before the recent window starts, across periods. |

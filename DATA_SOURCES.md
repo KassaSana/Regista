@@ -15,13 +15,13 @@ Regista's code is public. Provider data is not: it is downloaded locally into `d
 | 1.2.1 | Do not edit, distort, distribute, reproduce, sell, or provide the data to any third party. | Raw files stay in the git-ignored `data/`. Tests use synthetic, hand-built events. Golden snapshots store Regista's derived output (cards, counts, event identifiers), never copied provider records. A public replay viewer must not embed raw event files. ✅ |
 | 1.2.2 | Do not commercially exploit the data **or any analysis derived from it**. | No paid product, subscription, or commercial API. Anything tuned or trained on this data (thresholds, an expected-threat grid) must be re-derived from licensed data before any commercial use. ✅ |
 | 1.2.4 | Do not publish material that might be defamatory or damaging to any individual or organisation. | Cards describe observations neutrally, never intent or blame (AGENTS.md). ✅ |
-| 1.4 | Accredit any publication of analysis with the StatsBomb brand logo. | Any published write-up, screenshot, or chart shows the StatsBomb logo plus "Data: StatsBomb". Required before the repository goes public, because `docs/assets/3773497-shot-locations.svg` is derived analysis. ⚠️ Pending |
+| 1.4 | Accredit any publication of analysis with the StatsBomb brand logo. | Any published write-up, screenshot, or chart shows the StatsBomb logo plus "Data: StatsBomb". The README carries the text credit. Before the first public push, add the logo from StatsBomb's Media Pack (https://statsbomb.com/media-pack/) to the README, because `docs/assets/3773497-shot-locations.svg` is derived analysis. ⚠️ Logo pending until publishing |
 | 2.2 | StatsBomb asks users to register their name and email at https://www.statsbomb.com/resource-centre. | ⚠️ Kassahun to register. |
 | 7 | The data is StatsBomb's property; no transfer, distribution, or licensing without written consent. | Covered by the 1.2.1 practices above. ✅ |
 | 6.1 | StatsBomb may suspend access at any time. | Providers stay behind adapters; the local copy is for development only. |
 
 > **Agreement text checked against Regista's planned use on 2026-09-26: compatible, with the two ⚠️ items to complete before publishing.**
-> **License terms confirmed by Kassahun: ☐**
+> **License terms confirmed by Kassahun: ☑** (2026-09-26, accepting the review above)
 
 ## What is public and what is not
 

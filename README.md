@@ -27,7 +27,9 @@ control.
 The coordinate contract expects the StatsBomb open-data repository at
 `data/statsbomb/`. It skips when that local provider fixture is unavailable.
 StatsBomb open data is used for development only, with attribution, and not
-commercially.
+commercially. See [DATA_SOURCES.md](DATA_SOURCES.md).
+
+Data: StatsBomb (https://github.com/statsbomb/open-data).
 
 ## Architecture
 
