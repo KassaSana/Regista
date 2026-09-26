@@ -4,12 +4,24 @@ Regista's code is public. Provider data is not: it is downloaded locally into `d
 
 ## StatsBomb Open Data
 
-- Source: https://github.com/statsbomb/open-data (terms: `LICENSE.pdf` in that repository).
-- Use in Regista: development and research only. No commercial use of the data or of analysis derived from it.
-- Attribution: published analysis, screenshots, or write-ups show "Data: StatsBomb" and the StatsBomb logo.
-- No redistribution: raw event, lineup, match, or 360 files are never committed, uploaded, or bundled into a public viewer.
+- Source: https://github.com/statsbomb/open-data
+- Terms: *StatsBomb Public Data User Agreement* (`LICENSE.pdf` in that repository, last updated 8 September 2023).
 
-> **License terms confirmed by Kassahun: ☐** *(placeholder: the summary above comes from research notes, not a reading of the license. Tick after reading `LICENSE.pdf`.)*
+### What the agreement says, and how Regista complies
+
+| Clause | Requirement | Regista's planned use |
+|---|---|---|
+| Preamble, 1.1 | The data is for analysis, research, and shared understanding; analysis and conclusions may be shared publicly. | Learning and portfolio project: detectors, write-ups, derived visuals. ✅ |
+| 1.2.1 | Do not edit, distort, distribute, reproduce, sell, or provide the data to any third party. | Raw files stay in the git-ignored `data/`. Tests use synthetic, hand-built events. Golden snapshots store Regista's derived output (cards, counts, event identifiers), never copied provider records. A public replay viewer must not embed raw event files. ✅ |
+| 1.2.2 | Do not commercially exploit the data **or any analysis derived from it**. | No paid product, subscription, or commercial API. Anything tuned or trained on this data (thresholds, an expected-threat grid) must be re-derived from licensed data before any commercial use. ✅ |
+| 1.2.4 | Do not publish material that might be defamatory or damaging to any individual or organisation. | Cards describe observations neutrally, never intent or blame (AGENTS.md). ✅ |
+| 1.4 | Accredit any publication of analysis with the StatsBomb brand logo. | Any published write-up, screenshot, or chart shows the StatsBomb logo plus "Data: StatsBomb". Required before the repository goes public, because `docs/assets/3773497-shot-locations.svg` is derived analysis. ⚠️ Pending |
+| 2.2 | StatsBomb asks users to register their name and email at https://www.statsbomb.com/resource-centre. | ⚠️ Kassahun to register. |
+| 7 | The data is StatsBomb's property; no transfer, distribution, or licensing without written consent. | Covered by the 1.2.1 practices above. ✅ |
+| 6.1 | StatsBomb may suspend access at any time. | Providers stay behind adapters; the local copy is for development only. |
+
+> **Agreement text checked against Regista's planned use on 2026-09-26: compatible, with the two ⚠️ items to complete before publishing.**
+> **License terms confirmed by Kassahun: ☐**
 
 ## What is public and what is not
 
@@ -17,12 +29,12 @@ Regista's code is public. Provider data is not: it is downloaded locally into `d
 |---|---|
 | Source code and detectors | Raw provider files (`data/`) |
 | Tests with synthetic, hand-built events | Databases built from provider data (`*.duckdb`) |
-| Derived visuals and write-ups, with attribution | Copies or excerpts of raw event files |
+| Derived visuals and write-ups, with the StatsBomb logo | Copies or excerpts of raw event files |
 | Documentation | |
 
 ## If Regista ever becomes commercial
 
-Replace StatsBomb Open Data with a provider whose written agreement permits the intended commercial use, before any paid feature exists.
+Replace StatsBomb Open Data with a provider whose written agreement permits the intended commercial use, and re-derive any thresholds or models from that data, before any paid feature exists.
 
 ## Not used
 

@@ -13,6 +13,7 @@
 ## Commits
 - Agents may make commits, but only under the repository owner's git identity. Never change `git config user.*`.
 - Never add a `Co-Authored-By` trailer for an AI assistant, and never add "Generated with Claude Code" or similar lines to commits or pull requests. No AI tool should appear as an author, co-author, or committer.
+- Enforced by the empty `attribution` setting in `.claude/settings.json` and a local `.git/hooks/commit-msg` check that rejects AI co-author trailers. The git hook is not versioned; recreate it after a fresh clone.
 
 ## Architecture invariants
 - Ports and adapters: domain code never imports provider formats. `cli.py` is the composition root.
