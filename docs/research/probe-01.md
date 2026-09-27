@@ -69,6 +69,16 @@ Mechanical notes (agent), to check against the viewing:
 - **Involvement early in a match** compares against only the first few minutes, a thin baseline.
 - **Wording.** The Phase 1 template produces "Netherlands's" for team names that end in s.
 
+## Ready to view (checked 2026-09-27)
+The probe is still pending. Nothing here is a judgment.
+- **Reproducible.** From committed code (`scripts/research/probe_01.py`, SHA-256 `bbe5b7e0…c520`, unchanged), `uv run python scripts/research/probe_01.py --output <empty directory>` regenerated all three sheets byte-for-byte identical to the existing `out/probe-01/` sheets. The sheets are git-ignored local files, because they describe provider events.
+- **Viewing steps:**
+  1. Open one sheet from `out/probe-01/` next to its official replay (links under Data).
+  2. Read a row only when the replay clock reaches it.
+  3. Fill in every judgment column on the sheet.
+  4. Afterwards, answer the three per-match questions under Owner judgment, and ask to have the rows transferred here.
+- **Avoid priming.** [Research note 05](05-territory-and-threat.md) studies how territory relates to threat across the development corpus. It never names these three matches, but reading it first could colour your view of the Territory observations. Read it after viewing.
+
 ## Counterexamples and alternative interpretations
 To be filled in after viewing.
 
