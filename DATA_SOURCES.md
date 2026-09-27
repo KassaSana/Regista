@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-27
 
-Regista's code is public. Provider data is not: it is downloaded locally into `data/` and never committed.
+Regista's source code is kept in a private GitHub repository (a backup, not a public release) and is written so it could be made public. Provider data never is: it is downloaded locally into `data/` and never committed.
 
 ## StatsBomb Open Data
 

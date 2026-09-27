@@ -84,6 +84,8 @@ Ingestion runs in waves: Premier League 2015/16 first, then the rest of core bre
 
 **Remote storage (2026-09-27):** private R2 backup and restore (`regista data remote`) is implemented and rehearsed locally; the first real upload waits for the owner storage decision and Cloudflare setup. See [increment 10](docs/increments/10-remote-storage.md).
 
+**Source backup (2026-09-27):** the code is in a private GitHub repository with a minimal CI workflow (lint, format, strict types, synthetic and unit tests). It is a backup, not a public release.
+
 Research, on development data only (each piece of research is written up as a research note; see [docs/research/TEMPLATE.md](docs/research/TEMPLATE.md)):
 
 7. Explore the development data.
