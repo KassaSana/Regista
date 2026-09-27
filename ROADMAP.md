@@ -88,7 +88,7 @@ Ingestion runs in waves: Premier League 2015/16 first, then the rest of core bre
 
 Research, on development data only (each piece of research is written up as a research note; see [docs/research/TEMPLATE.md](docs/research/TEMPLATE.md)):
 
-7. Explore the development data.
+7. Explore the development data. First note (2026-09-27): [research note 05](docs/research/05-territory-and-threat.md), territory versus threat in 10-minute windows. Retrospective; no detector change.
 8. Turn fan questions into candidate signals:
    - What changed in the last 10–15 minutes?
    - Who has taken control even though the score has not changed?
