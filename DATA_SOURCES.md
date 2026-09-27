@@ -32,7 +32,7 @@ Clauses were read by a coding agent from the official PDF (all five pages) on 20
 ### Status
 
 Human-owned items (only Kassahun ticks these):
-- [ ] Kassahun personally read the current StatsBomb Public Data User Agreement (`LICENSE.pdf`).
+- [x] Kassahun personally read the current StatsBomb Public Data User Agreement (`LICENSE.pdf`). Confirmed by Kassahun on 2026-09-27.
 - [ ] If an official Open Data registration form becomes available, Kassahun registers his own name and email.
 - [ ] Before the first public release, Kassahun re-checks the agreement, the registration path, and the brand guidance, and records the date here.
 - [ ] Written Hudl/StatsBomb commercial rights are obtained before any monetization involving StatsBomb data or derived analysis.
@@ -60,16 +60,16 @@ Recorded by research (agent):
 
 Phase 2 downloads are pinned to a specific `hudl/open-data` commit and land in `data/raw/statsbomb-open-data/<commit>/`, mirroring the provider's paths. An append-only manifest (`data/raw/manifest.jsonl`) records each file's source, checksum, retrieval time, and license class. Raw files are never edited. Normalized and analytical tables live in `data/warehouse/regista.duckdb` (development matches) and `data/warehouse/held_out.duckdb` (validation and test). Both also hold the original provider records and is therefore never committed. Details: [docs/specs/phase-2-data-model.md](docs/specs/phase-2-data-model.md).
 
-## Private remote storage (implemented, not yet used)
+## Private remote storage (implemented; owner-approved 2026-09-27; not yet used)
 
 `regista data remote` can back up development raw files, the manifest, and development warehouse snapshots to a **private** Cloudflare R2 bucket (see [increment 10](docs/increments/10-remote-storage.md)).
 - The bucket must stay private: no public `r2.dev` URL and no custom domain. Access is through one bucket-scoped API token whose values are kept only in git-ignored `.env`.
 - Validation and test data are never stored there.
 
-Clause 1.2.1 asks users not to "provide the data to any third party". Whether storing the files with a private storage provider for personal, non-commercial use is compatible with it is the owner's interpretation. No upload happens until this is recorded.
+Clause 1.2.1 asks users not to "provide the data to any third party". Whether storing the files with a private storage provider for personal, non-commercial use is compatible with it is the owner's interpretation. Kassahun recorded it on 2026-09-27 (below). Uploads still require the private bucket, a bucket-scoped token, and a local `.env`.
 
 Human-owned item (only Kassahun ticks this):
-- [ ] Kassahun decided that private R2 storage of StatsBomb raw files and development warehouse snapshots is permitted for this personal, non-commercial project, and recorded the date.
+- [x] Kassahun decided that private R2 storage of StatsBomb raw files and development warehouse snapshots is permitted for this personal, non-commercial project. Decided and confirmed by Kassahun on 2026-09-27.
 
 ## If Regista ever becomes commercial
 

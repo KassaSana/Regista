@@ -105,3 +105,11 @@ Rebuilding replaces the warehouse file atomically from the same immutable raw fi
 - The increment's code is committed (`41db472`), so step 1 of the reproducibility note is done.
 - The canonical warehouse has **not** been rebuilt. It is still run `9a6c9d48abd4fa3f` (git commit `449aa78`, dirty tree), with 800 development matches and 0 non-development matches, checked read-only on this date.
 - No real upload, `.env`, or bucket exists. The owner items above are unchanged.
+
+## Addendum (2026-09-27): owner decision recorded; real proof blocked on setup
+- Kassahun recorded the private-storage decision and his reading of the agreement in `DATA_SOURCES.md` (owner item 1 above is done).
+- The real restore proof was not started. There is no `.env` in the repository root and no `REGISTA_R2_*` variable in the environment. Without them, `storage/r2.py` cannot reach a bucket, and working around that is out of scope.
+- Minimum owner action:
+  1. Create a private R2 bucket (no `r2.dev` URL, no custom domain) and an API token with object read and write on that bucket only.
+  2. Copy `.env.example` to `.env` and fill in the four values.
+- Free disk space on this date was about 17 GiB. A full scratch restore needs about 4 GB (2.3 GB raw plus a 1.5 GB warehouse), and a second scratch warehouse about 1.5 GB more.
