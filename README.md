@@ -11,7 +11,8 @@ shift detector turn a replayed match into cards with their supporting event
 identifiers. Phase 2 now has a pinned catalog of 1,894 matches and frozen
 development/validation/test splits. 800 of the 1,340 development matches are
 downloaded, validated, and normalized into a local DuckDB development warehouse
-(no held-out match data). Private R2 backup is implemented but not yet used, and
+(no held-out match data). A private R2 backup holds the raw corpus and a warehouse snapshot, with a
+verified full restore (2026-09-27), and
 the owner's viewing-probe judgments are pending. See
 [ROADMAP.md](ROADMAP.md) for the phases and [AGENTS.md](AGENTS.md) for the
 working rules. Specifications:

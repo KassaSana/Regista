@@ -113,3 +113,21 @@ Rebuilding replaces the warehouse file atomically from the same immutable raw fi
   1. Create a private R2 bucket (no `r2.dev` URL, no custom domain) and an API token with object read and write on that bucket only.
   2. Copy `.env.example` to `.env` and fill in the four values.
 - Free disk space on this date was about 17 GiB. A full scratch restore needs about 4 GB (2.3 GB raw plus a 1.5 GB warehouse), and a second scratch warehouse about 1.5 GB more.
+
+## Addendum (2026-09-27): real R2 restore proof
+Run against the private bucket from committed code, with credentials only in git-ignored `.env`. No credential, account identifier, or endpoint is recorded here. The canonical `data/` was only read, apart from step 1.
+
+| Step | Evidence |
+|---|---|
+| 1. Canonical warehouse from committed code | Run `aa59531475ecb2a5`, git `7251c15`, `git_dirty = false`, 800 of 800 matches, 0 failed. The previous dirty-tree build (run `9a6c9d48abd4fa3f`) is kept locally as a backup for the owner to decide on. |
+| 2. Push | Raw: 1,630 objects, 2,443,928,939 bytes, 0 already stored; manifest snapshot `f1076a4f4245`. Warehouse snapshot `aa59531475ecb2a5`: 1,632,645,120 bytes. |
+| 3. Repeat push | Raw: 0 objects, 0 bytes uploaded (1,615 already stored). Warehouse: 0 objects, 0 bytes ("already stored"). |
+| 4. Deep verify | 1,615 raw objects and 1 warehouse snapshot downloaded and re-hashed: all verified. |
+| 5. Restore into an empty scratch directory | 800 development matches: 1,600 match files (2,440,435,570 bytes), plus 14 indexes, the provenance receipt, and the manifest (byte-identical to the canonical manifest). |
+| 6. Acquisition checksums | `data download --verify-only`: 1,614 verified, 0 downloaded (2,443,923,640 bytes). An independent re-hash found 0 mismatches in 1,614 manifest entries. |
+| 7. Warehouse from restored files only | Built in a clean worktree at `7251c15`: run `aa59531475ecb2a5` (the same run ID), 800 of 800 matches. A first build at the later docs-only commit got a different run ID, because the commit is part of the ID. |
+| 8. Fingerprint vs canonical | `fingerprint --compare`: **Identical**, 32 of 32 tables (DuckDB 1.5.5 on both). |
+| 9. Snapshot restored separately | `pull --warehouse aa59531475ecb2a5`: checksum and fingerprint verified. `fingerprint --compare` against canonical: **Identical**, 32 of 32 tables. The file is also byte-identical (SHA-256 `18410599ca0a62d6…`). |
+| 10. Held-out request | Validation match 3753973 and test match 3753989 were refused ("held out or absent from the split"), with 0 files written. With no credentials in the environment, the same refusal appears instead of a missing-credential error, so the check runs before credentials are read or the network is used. |
+
+Scratch copies (restore, snapshot, and verification downloads) were deleted afterwards; the canonical data was not. Freeing local disk space is now possible, but it is the owner's decision (see "Remaining (owner)", item 4).

@@ -82,7 +82,7 @@ Ingestion runs in waves: Premier League 2015/16 first, then the rest of core bre
 
 **Wave 2 (owner request, 2026-09-27):** grow development data for diversity. It added the nine modern-robustness sets and Serie A 2015/16, for 800 development matches from 174 teams, 2015–2024, club and international. There were 0 exclusions, and the rebuild is deterministic. No split change. See [increment 9](docs/increments/09-development-wave-2.md).
 
-**Remote storage (2026-09-27):** private R2 backup and restore (`regista data remote`) is implemented and rehearsed locally; the first real upload waits for the owner storage decision and Cloudflare setup. See [increment 10](docs/increments/10-remote-storage.md).
+**Remote storage (2026-09-27):** private R2 backup and restore (`regista data remote`) is implemented. The real backup and full restore proof passed on 2026-09-27: the restored corpus rebuilt an identical warehouse. See [increment 10](docs/increments/10-remote-storage.md).
 
 **Source backup (2026-09-27):** the code is in a private GitHub repository with a minimal CI workflow (lint, format, strict types, synthetic and unit tests). It is a backup, not a public release.
 

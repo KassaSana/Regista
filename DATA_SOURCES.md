@@ -60,7 +60,7 @@ Recorded by research (agent):
 
 Phase 2 downloads are pinned to a specific `hudl/open-data` commit and land in `data/raw/statsbomb-open-data/<commit>/`, mirroring the provider's paths. An append-only manifest (`data/raw/manifest.jsonl`) records each file's source, checksum, retrieval time, and license class. Raw files are never edited. Normalized and analytical tables live in `data/warehouse/regista.duckdb` (development matches) and `data/warehouse/held_out.duckdb` (validation and test). Both also hold the original provider records and is therefore never committed. Details: [docs/specs/phase-2-data-model.md](docs/specs/phase-2-data-model.md).
 
-## Private remote storage (implemented; owner-approved 2026-09-27; not yet used)
+## Private remote storage (owner-approved and in use since 2026-09-27)
 
 `regista data remote` can back up development raw files, the manifest, and development warehouse snapshots to a **private** Cloudflare R2 bucket (see [increment 10](docs/increments/10-remote-storage.md)).
 - The bucket must stay private: no public `r2.dev` URL and no custom domain. Access is through one bucket-scoped API token whose values are kept only in git-ignored `.env`.
