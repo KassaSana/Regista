@@ -1,1 +1,1 @@
-"""Pure domain types for Regista's rating engine."""
+"""Pure, provider-independent domain types for Regista."""

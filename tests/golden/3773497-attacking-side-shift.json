@@ -1,0 +1,164 @@
+{
+  "match_id": 3773497,
+  "detector": "attacking_side_shift",
+  "settings": {
+    "window_seconds": 600,
+    "minimum_recent_entries": 8,
+    "minimum_baseline_entries": 12,
+    "minimum_share_increase": "1/4",
+    "cooldown_seconds": 600
+  },
+  "cards": [
+    {
+      "period": 1,
+      "minute": 23,
+      "second": 11,
+      "team": "Barcelona",
+      "channel": "center",
+      "sentence": "Barcelona's final-third entries have shifted to the center: 6 of the last 11 (55%), up from 3 of 13 (23%) earlier.",
+      "recent": {
+        "left": 3,
+        "center": 6,
+        "right": 2
+      },
+      "baseline": {
+        "left": 2,
+        "center": 3,
+        "right": 8
+      },
+      "channels_losing_share": [
+        "right"
+      ],
+      "trigger_event_id": "5f90c301-9ac3-4e82-b95f-8641ebfb3b25",
+      "recent_entry_ids": [
+        "27894723-1df7-4084-ba0f-8e846f481f23",
+        "2ce47f80-9641-47f5-93cd-dd262e1ca890",
+        "09f28a9f-7cb3-4beb-b564-3a1dd0767471",
+        "5c5ca4d2-85b7-4e8a-95a1-da5bfa321b36",
+        "6b1f407f-d8e4-4f5c-b0bd-5d59b0ef1aef",
+        "76240d25-6b87-46d5-9759-69564ad43e3d",
+        "19e43c8f-b779-4342-9ae9-0b5ad57c8376",
+        "3d5f3d2c-24f1-44f8-a61a-8d2483b12e59",
+        "0ca8591c-1be8-4813-927c-6e8a984701b0",
+        "75267f5b-1249-459d-a836-874d409069dc",
+        "fbfe668c-9029-4c51-90d4-869795e4fe27"
+      ],
+      "baseline_entry_ids": [
+        "fb0b3af2-3419-4eb8-a7f9-249e1bce7c63",
+        "866e7dd1-7c46-46b6-8219-58a59ef42ffd",
+        "7ced7ebb-2708-455d-8dba-28d8ee605942",
+        "2aa37c31-6c4a-4d78-b7aa-f58b2c197bb8",
+        "2b018e57-c3d1-4327-bc81-60f0a8bf6104",
+        "af776d5e-c1b0-4868-95cf-87654348b3c4",
+        "c5b98544-241c-4967-a049-8d4afeb1b911",
+        "9afe0d9d-583f-4b2a-9624-57977ab9002f",
+        "4a4002e5-63c5-492e-8524-3de0fc0765be",
+        "db39a9be-cd26-4685-bd35-6ff9b68664b7",
+        "e448c8f6-aa9a-489e-aaaf-e7e3728f91e9",
+        "ab73c0cc-29bd-4487-bafc-73eb01bc0854",
+        "117d093f-c243-4c2c-b28a-63bc80625268"
+      ],
+      "sources": [
+        "StatsBomb Open Data"
+      ]
+    },
+    {
+      "period": 2,
+      "minute": 55,
+      "second": 3,
+      "team": "Barcelona",
+      "channel": "left",
+      "sentence": "Barcelona's final-third entries have shifted to the left: 10 of the last 14 (71%), up from 13 of 54 (24%) earlier.",
+      "recent": {
+        "left": 10,
+        "center": 2,
+        "right": 2
+      },
+      "baseline": {
+        "left": 13,
+        "center": 19,
+        "right": 22
+      },
+      "channels_losing_share": [
+        "center",
+        "right"
+      ],
+      "trigger_event_id": "3dae685d-d638-4693-a2b2-35f262d47347",
+      "recent_entry_ids": [
+        "9b907e85-7ba3-4f48-a6b3-91014da86f9b",
+        "f5c57945-00a9-43ce-b0c0-2f9d60901db4",
+        "e8c9a264-0f92-4b59-9a34-af4a5eef3d64",
+        "98a39f36-333b-46cf-86e5-e18d09d943f0",
+        "23776d70-0622-4994-aef8-8ff823cbffcd",
+        "4f9bbc98-6297-4cd9-9b52-5ebd0fd709a4",
+        "c7bba5e5-40d6-4d94-841b-17190d307d64",
+        "2161c245-3ff4-4eb3-b4c2-ecf923257480",
+        "b9796aac-774e-42bc-b1ae-d5419db272af",
+        "d57e83d1-d75c-409a-9cc3-1901d32a5fd4",
+        "f691ac55-ea11-4f9f-bc82-ddacd398ee0a",
+        "0034993c-7da5-402d-867e-8fcbb6480a47",
+        "187128ce-099f-40b6-a133-73f473b7a784",
+        "16df8afc-4b2f-4230-bfab-b4188f6ea4c6"
+      ],
+      "baseline_entry_ids": [
+        "fb0b3af2-3419-4eb8-a7f9-249e1bce7c63",
+        "866e7dd1-7c46-46b6-8219-58a59ef42ffd",
+        "7ced7ebb-2708-455d-8dba-28d8ee605942",
+        "2aa37c31-6c4a-4d78-b7aa-f58b2c197bb8",
+        "2b018e57-c3d1-4327-bc81-60f0a8bf6104",
+        "af776d5e-c1b0-4868-95cf-87654348b3c4",
+        "c5b98544-241c-4967-a049-8d4afeb1b911",
+        "9afe0d9d-583f-4b2a-9624-57977ab9002f",
+        "4a4002e5-63c5-492e-8524-3de0fc0765be",
+        "db39a9be-cd26-4685-bd35-6ff9b68664b7",
+        "e448c8f6-aa9a-489e-aaaf-e7e3728f91e9",
+        "ab73c0cc-29bd-4487-bafc-73eb01bc0854",
+        "117d093f-c243-4c2c-b28a-63bc80625268",
+        "27894723-1df7-4084-ba0f-8e846f481f23",
+        "2ce47f80-9641-47f5-93cd-dd262e1ca890",
+        "09f28a9f-7cb3-4beb-b564-3a1dd0767471",
+        "5c5ca4d2-85b7-4e8a-95a1-da5bfa321b36",
+        "6b1f407f-d8e4-4f5c-b0bd-5d59b0ef1aef",
+        "76240d25-6b87-46d5-9759-69564ad43e3d",
+        "19e43c8f-b779-4342-9ae9-0b5ad57c8376",
+        "3d5f3d2c-24f1-44f8-a61a-8d2483b12e59",
+        "0ca8591c-1be8-4813-927c-6e8a984701b0",
+        "75267f5b-1249-459d-a836-874d409069dc",
+        "fbfe668c-9029-4c51-90d4-869795e4fe27",
+        "f2a46924-70cd-48a0-9303-6d4aa2e0f1be",
+        "9aae0e58-9e5f-4546-973c-16efcafd20c6",
+        "451b1d6f-1dac-4677-8043-48a5f52bebf3",
+        "6684d373-6cc7-40b0-b09e-6bcac8934deb",
+        "ec7b1b05-61ad-4f98-bf1d-1f2be9938a40",
+        "2953c263-2855-4a27-831c-a30b87c5ed23",
+        "351d0a32-9264-4c43-b4e8-2399ba987a75",
+        "b0701d99-d4d1-4202-a3c8-1f486aaa9d0c",
+        "9e16fec5-e587-444b-a0a5-64dc0f8de4dd",
+        "d987776b-f470-46bc-82d9-42e1d93cfecc",
+        "85fba098-fb64-4f5f-a06e-aaf8efb4bb53",
+        "4ac6f53d-7678-49c4-bd3d-d9bca735a4e0",
+        "b76de95e-92da-4281-a9b1-da12c2676848",
+        "ac9a5a04-07b9-44d4-9f46-51aabbf0a2c0",
+        "c790882c-58b9-47c9-a3c9-8629fd295b77",
+        "e157a090-d888-42fd-b489-a5effb8825d1",
+        "a21d964a-5e71-4928-ad62-1717bab7b237",
+        "f2630c94-7b3c-4f4f-87f8-bc0e81af08b0",
+        "2378e27c-deca-49f9-bee6-885ee811c18a",
+        "eb10f3ad-d8c6-4f10-b169-f03bd57da057",
+        "882543e6-832b-4fcf-a596-a89f5924f573",
+        "f88273d2-ad6d-4190-a099-9c88558074e0",
+        "c82ef6ba-6eed-4560-8e82-e347c76df717",
+        "850ce63d-037b-4495-966b-8a861683bc00",
+        "a44b3d26-0d79-49b2-858c-3a1a061fac0e",
+        "35fb68b9-de1c-494f-8755-b6cbe86c1413",
+        "187d7b3d-ac3f-4141-abb4-c1eb6ad38fb7",
+        "785a402c-68af-4c7f-9952-41bee557fef0",
+        "2388b66d-535f-4587-bf33-e0962c79d2c7",
+        "dabd4125-0141-488b-86ce-d07e0ce629ad"
+      ],
+      "sources": [
+        "StatsBomb Open Data"
+      ]
+    }
+  ]
+}

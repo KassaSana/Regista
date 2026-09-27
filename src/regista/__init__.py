@@ -1,4 +1,4 @@
-"""Regista's provider-independent player rating engine."""
+"""Regista: an evidence-backed soccer match companion."""
 
 from importlib.metadata import version
 

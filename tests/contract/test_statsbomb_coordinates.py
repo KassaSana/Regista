@@ -14,7 +14,8 @@ from regista.domain.geometry import Pitch, Point
 pytestmark = pytest.mark.contract
 
 MATCH_ID = 3_773_497
-EVENTS_PATH = Path("data/statsbomb/data/events") / f"{MATCH_ID}.json"
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+EVENTS_PATH = REPOSITORY_ROOT / "data/statsbomb/data/events" / f"{MATCH_ID}.json"
 
 
 class _NamedObject(TypedDict):
