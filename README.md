@@ -9,9 +9,10 @@ and shows the evidence behind it.
 Phase 1 is done: a StatsBomb adapter, a replay engine, and the attacking-side
 shift detector turn a replayed match into cards with their supporting event
 identifiers. Phase 2 now has a pinned catalog of 1,894 matches and frozen
-development/validation/test splits. The first development batch is downloaded:
-270 matches, with events and lineups. Full normalization and the warehouse are
-the next implementation increment; the owner deferred the viewing probe to begin acquisition. See
+development/validation/test splits. 800 of the 1,340 development matches are
+downloaded, validated, and normalized into a local DuckDB development warehouse
+(no held-out match data). Private R2 backup is implemented but not yet used, and
+the owner's viewing-probe judgments are pending. See
 [ROADMAP.md](ROADMAP.md) for the phases and [AGENTS.md](AGENTS.md) for the
 working rules. Specifications:
 [Phase 1 detector](docs/specs/phase-1-attacking-side-shift.md) and
@@ -62,10 +63,13 @@ for the remaining acquisition, validation, and warehouse increments.
 
 ## Downloaded development data
 
-The first batch contains 266 Premier League development matches plus the four
-already-inspected matches: 931,293 event records, 270 lineup files, and the 14
-source indexes (808,249,944 bytes in total). These are local raw inputs, not yet
-a fully validated or normalized warehouse.
+Two development waves are downloaded: 800 matches (1,600 event and lineup
+files plus 14 pinned indexes, about 2.3 GB) from 12 competition-seasons,
+2015–2024. The first wave (266 Premier League 2015/16 matches plus four
+already-inspected matches) is recorded in
+[increment 6](docs/increments/06-reproducible-acquisition.md), and the second
+(nine modern-robustness sets plus Serie A 2015/16) in
+[increment 9](docs/increments/09-development-wave-2.md).
 
 ```console
 uv run regista data download --competition 2 --season 27 --include-inspected

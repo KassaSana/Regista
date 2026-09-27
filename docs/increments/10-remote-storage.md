@@ -100,3 +100,8 @@ Rebuilding replaces the warehouse file atomically from the same immutable raw fi
 2. Do the Cloudflare setup and create `.env`.
 3. Run the first real upload, deep verification, and restore proof.
 4. Only then free local disk space.
+
+## Addendum (2026-09-27): state after the first commits
+- The increment's code is committed (`41db472`), so step 1 of the reproducibility note is done.
+- The canonical warehouse has **not** been rebuilt. It is still run `9a6c9d48abd4fa3f` (git commit `449aa78`, dirty tree), with 800 development matches and 0 non-development matches, checked read-only on this date.
+- No real upload, `.env`, or bucket exists. The owner items above are unchanged.

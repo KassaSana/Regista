@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-27
 
-**Status: catalog, frozen splits, first development acquisition, validation, the normalized and analytical development warehouse, and data-quality reporting implemented (increments 5–8). The held-out warehouse and `team_window_distributions` remain design.**
+**Status: catalog, frozen splits, first development acquisition, validation, the normalized and analytical development warehouse, and data-quality reporting implemented (increments 5–8); development wave 2 brings the warehouse to 800 development matches (increment 9); private R2 backup and restore implemented but not yet used for a real upload (increment 10). The held-out warehouse and `team_window_distributions` remain design.**
 Increments [7](../increments/07-validation-and-normalized-warehouse.md) and [8](../increments/08-analytical-tables-and-first-wave-audit.md) record the warehouse, its inventory, and the deviations noted in this document.
 Increment 5 acquired and verified the pinned match indexes and created `splits/v1.json`.
 The probe's owner judgments remain pending. On 2026-09-27 the owner authorized starting reproducible acquisition before viewing, superseding that sequencing gate for the first development wave. See the [catalog execution record](../increments/05-catalog-and-frozen-splits.md) and [acquisition increment](../increments/06-reproducible-acquisition.md).

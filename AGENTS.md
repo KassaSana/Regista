@@ -63,7 +63,7 @@ I own: labeled evaluation moments, fan-usefulness judgments (including probe jud
 ## Locked definitions
 Record metric definitions here as they are decided. Full detector specifications live in `docs/specs/`.
 - Phase 1 detector: [docs/specs/phase-1-attacking-side-shift.md](docs/specs/phase-1-attacking-side-shift.md) (status: initial defaults to evaluate).
-- Phase 2 data model, corpus, and splits: [docs/specs/phase-2-data-model.md](docs/specs/phase-2-data-model.md) (status: design, not yet implemented).
+- Phase 2 data model, corpus, and splits: [docs/specs/phase-2-data-model.md](docs/specs/phase-2-data-model.md) (status: development warehouse implemented for 800 development matches; held-out warehouse and `team_window_distributions` still design).
 - Final-third entry: an open-play completed pass or carry starting before x = 80 and ending at or beyond x = 80 (attacking frame).
 - Completed pass: the provider record has no outcome. Any recorded outcome, including "Unknown", means not completed; Regista never claims a completion the provider cannot confirm (match 3773497 has 4 "Unknown" passes). Carries always count as completed.
 - Open play: decided per event from the pass type. Corner, Free Kick, Throw-in, Goal Kick, and Kick Off passes are set pieces and excluded. Recovery and Interception passes are open play. Carries always count. Never use the possession-level `play_pattern` for this: it labels whole possessions and may be assigned with hindsight.
