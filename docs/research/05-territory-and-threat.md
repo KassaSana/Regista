@@ -240,3 +240,6 @@ Kassahun's judgment of fan usefulness. Agents leave this section empty.
   - any statement about validation or test data.
 - **Smallest next experiment:** repeat the change analysis with "earlier in this match" as the comparison (the probe prototype's framing), computed point-in-time at each window end and split by score state before the window. Check whether falling xG per entry survives with shots that did not follow an entry left out. This uses the same script and warehouse, with no new data.
 - **Owner feedback needed:** the three-match viewing probe (`docs/research/probe-01.md`). Only it can say whether a "territory up, threat not up" card is worth a fan's attention. Owner decisions on the field-tilt minimum and box-entry definition remain open (increment 8).
+
+## Addendum (2026-09-27): re-checked on a clean build
+The canonical warehouse was rebuilt from committed code: run `aa59531475ecb2a5`, git `7251c15`, `git_dirty = false`, 800 of 800 matches. The 10-minute results reproduced identically; every field except provenance matched. The dirty-tree limitation above no longer applies to the 10-minute results.
