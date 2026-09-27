@@ -1,0 +1,117 @@
+# Regista research corpus choices
+# Last updated: 2026-09-27
+# Identifiers and selections only; provider payloads remain in ignored data/.
+provider = "statsbomb"
+dataset = "open-data"
+source_commit = "b0bc9f22dd77c206ddedc1d742893b3bbe64baec"
+inspected_match_ids = [3773497, 265958, 3869420, 3869321]
+review_seed = 20260927
+
+# First ingestion wave: Premier League 2015/16, after the owner probe decision.
+# 360 availability is inventoried, but frame downloads wait until Phase 6.
+# Serie A and Ligue 1 each have one known missing data_version metadata record.
+
+# Premier League 2015/16
+[[competition_seasons]]
+competition_id = 2
+season_id = 27
+role = "core_breadth"
+coverage = "complete_season"
+expected_matches = 380
+
+# La Liga 2015/16
+[[competition_seasons]]
+competition_id = 11
+season_id = 27
+role = "core_breadth"
+coverage = "complete_season"
+expected_matches = 380
+
+# Serie A 2015/16
+[[competition_seasons]]
+competition_id = 12
+season_id = 27
+role = "core_breadth"
+coverage = "complete_season"
+expected_matches = 380
+
+# Ligue 1 2015/16
+[[competition_seasons]]
+competition_id = 7
+season_id = 27
+role = "core_breadth"
+coverage = "complete_season"
+expected_matches = 377
+known_missing_matches = 3
+
+# Bundesliga 2023/24
+[[competition_seasons]]
+competition_id = 9
+season_id = 281
+role = "modern_robustness"
+coverage = "single_team"
+expected_matches = 34
+
+# Ligue 1 2021/22
+[[competition_seasons]]
+competition_id = 7
+season_id = 108
+role = "modern_robustness"
+coverage = "single_team"
+expected_matches = 26
+
+# Ligue 1 2022/23
+[[competition_seasons]]
+competition_id = 7
+season_id = 235
+role = "modern_robustness"
+coverage = "single_team"
+expected_matches = 32
+
+# La Liga 2020/21
+[[competition_seasons]]
+competition_id = 11
+season_id = 90
+role = "modern_robustness"
+coverage = "single_team"
+expected_matches = 35
+
+# World Cup 2022
+[[competition_seasons]]
+competition_id = 43
+season_id = 106
+role = "modern_robustness"
+coverage = "tournament"
+expected_matches = 64
+
+# Euro 2020
+[[competition_seasons]]
+competition_id = 55
+season_id = 43
+role = "modern_robustness"
+coverage = "tournament"
+expected_matches = 51
+
+# Euro 2024
+[[competition_seasons]]
+competition_id = 55
+season_id = 282
+role = "modern_robustness"
+coverage = "tournament"
+expected_matches = 51
+
+# Copa America 2024
+[[competition_seasons]]
+competition_id = 223
+season_id = 282
+role = "modern_robustness"
+coverage = "tournament"
+expected_matches = 32
+
+# Africa Cup of Nations 2023
+[[competition_seasons]]
+competition_id = 1267
+season_id = 107
+role = "modern_robustness"
+coverage = "tournament"
+expected_matches = 52

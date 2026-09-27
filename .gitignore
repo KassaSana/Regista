@@ -24,3 +24,6 @@ data/
 
 # Generated replay exports
 out/
+
+# Local secrets (R2 credentials); see .env.example
+.env

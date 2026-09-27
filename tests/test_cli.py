@@ -1,8 +1,42 @@
-"""Smoke tests for the initial command-line composition root."""
+"""Smoke tests for the command-line composition root, on synthetic event files."""
+
+import json
+from pathlib import Path
 
 import pytest
 
 from regista.cli import build_parser, main
+
+
+def statsbomb_record(index: int, minute: int, second: int, **extra: object) -> dict[str, object]:
+    """Build a minimal synthetic StatsBomb-shaped record (no provider data is copied)."""
+    record: dict[str, object] = {
+        "id": f"synthetic-{index}",
+        "index": index,
+        "period": 1,
+        "minute": minute,
+        "second": second,
+        "type": {"id": 0, "name": "Pressure"},
+        "team": {"id": 7, "name": "Home"},
+    }
+    record.update(extra)
+    return record
+
+
+def entry_record(index: int, minute: int, second: int, end_y: float) -> dict[str, object]:
+    return statsbomb_record(
+        index,
+        minute,
+        second,
+        type={"id": 30, "name": "Pass"},
+        location=[70.0, end_y],
+        **{"pass": {"end_location": [85.0, end_y]}},
+    )
+
+
+def write_match(directory: Path, records: list[dict[str, object]]) -> None:
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "1.json").write_text(json.dumps(records))
 
 
 def test_parser_uses_product_name() -> None:
@@ -14,3 +48,62 @@ def test_empty_command_prints_help(capsys: pytest.CaptureFixture[str]) -> None:
 
     assert exit_code == 0
     assert "Evidence-backed soccer match insights" in capsys.readouterr().out
+
+
+def test_replay_of_a_quiet_match_says_so_with_attribution(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    write_match(tmp_path, [statsbomb_record(1, 0, 0), statsbomb_record(2, 30, 0)])
+
+    exit_code = main(["replay", "--match", "1", "--events-dir", str(tmp_path)])
+
+    assert exit_code == 0
+    assert capsys.readouterr().out == "No cards.\nData: StatsBomb\n"
+
+
+def test_replay_prints_each_card_with_its_evidence(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    channel_y = [10.0, 40.0, 70.0]
+    baseline = [entry_record(1 + i, *divmod(40 * i, 60), channel_y[i % 3]) for i in range(12)]
+    recent = [entry_record(20 + i, 11 + i, 0, 10.0) for i in range(8)]
+    write_match(tmp_path, baseline + recent)
+
+    main(["replay", "--match", "1", "--events-dir", str(tmp_path)])
+
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[0] == (
+        "[period 1, 18:00] Home's final-third entries have shifted to the left: "
+        "8 of the last 8 (100%), up from 4 of 12 (33%) earlier."
+    )
+    assert lines[1] == "  recent entries: " + ", ".join(f"synthetic-{20 + i}" for i in range(8))
+    assert lines[2].startswith("  baseline entries: synthetic-1, ")
+    assert lines[-1] == "Data: StatsBomb"
+
+
+def test_replay_with_evidence_prints_the_channel_table_instead_of_identifiers(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    channel_y = [10.0, 40.0, 70.0]
+    baseline = [entry_record(1 + i, *divmod(40 * i, 60), channel_y[i % 3]) for i in range(12)]
+    recent = [entry_record(20 + i, 11 + i, 0, 10.0) for i in range(8)]
+    write_match(tmp_path, baseline + recent)
+
+    main(["replay", "--match", "1", "--events-dir", str(tmp_path), "--evidence"])
+
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[1] == "  channel recent          baseline        change"
+    assert lines[2] == "  left    8 of 8   100%   4 of 12  33%    +67 points"
+    assert "  recent window entries (period 1):" in lines
+    assert not any("synthetic-" in line for line in lines)
+    assert lines[-1] == "Data: StatsBomb"
+
+
+def test_replay_of_a_missing_match_exits_with_a_usage_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    with pytest.raises(SystemExit) as exit_info:
+        main(["replay", "--match", "99", "--events-dir", str(tmp_path)])
+
+    assert exit_info.value.code == 2
+    assert "no event file for match 99" in capsys.readouterr().err
