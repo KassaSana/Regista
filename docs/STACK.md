@@ -1,5 +1,7 @@
 # Regista Technology Stack
 
+Last updated: 2026-09-27
+
 This is the record of which languages, tools, and approaches Regista uses, when each one arrives, and why. Changing a choice here is a recorded decision (see [AGENTS.md](../AGENTS.md)).
 
 ## Principles
@@ -20,10 +22,11 @@ This is the record of which languages, tools, and approaches Regista uses, when 
 | Tests | pytest + Hypothesis | Now | Examples plus property tests (for example, prefix invariance) |
 | Domain model | Standard-library frozen dataclasses, enums, `NewType` identifiers, `Protocol` ports | Phase 1 | No third-party imports in the domain |
 | Provider parsing | Standard-library `json` + `TypedDict`, validated by hand in the adapter | Phase 1 | Only a few fields; Pydantic only if parsing grows |
-| Replay engine | A plain Python iterator ordered by provider `index`. Each detector is an incremental object that observes one event at a time and returns cards. | Phase 1 | Prefix invariance holds by construction, and the same code can later run live |
+| Replay engine | A plain Python iterator ordered by provider `index` (`domain/replay.py`). Each detector is an incremental object that observes one event at a time and returns cards. | Phase 1 | Prefix invariance holds by construction, and the same code can later run live |
 | Command-line interface | argparse in `cli.py`, the composition root | Now / Phase 1 | Already in place; `regista replay --match <identifier>` |
-| Data download | A standard-library `urllib` script writing into `data/` | Phase 2 | No HTTP dependency needed |
-| Exploration across matches | DuckDB: the command-line tool now, the Python package as a development dependency in Phase 2 | Phase 2 | SQL over dozens of matches without building a database layer |
+| Data download | Standard-library `urllib`, pinned to a provider commit, writing into `data/raw/` with a checksummed manifest (`regista data download`) | Phase 2 | No HTTP dependency needed; reproducible inputs |
+| Warehouse and exploration | DuckDB holding the normalized and analytical tables: `data/warehouse/regista.duckdb` for development matches (the only file research tools, including the read-only DuckDB server for agents, open) and `data/warehouse/held_out.duckdb` for validation and test. The `duckdb` Python package is a **runtime** dependency confined to `regista.warehouse`; the architecture test enforces that nothing else imports it. It arrived with ingestion wave 1 (`duckdb` 1.5.5, increment 7). (Decision 2026-09-27: it was a development dependency, but building the tables is part of the pipeline, not only exploration.) | Phase 2 | SQL over thousands of matches without running a database server |
+| Remote durable storage | A private Cloudflare R2 bucket through its S3-compatible API with `boto3` (runtime dependency, confined to `regista.storage`; `boto3-stubs[s3]` for type checking). Local `data/` stays the working copy; `regista data remote push \| verify \| pull` sync it. Credentials come from environment variables in git-ignored `.env`. (Decision 2026-09-27: lets the corpus leave the local disk without changing any local workflow; no database service or daemon.) | Phase 2 | Durable, restorable copy of pinned raw files and warehouse snapshots; egress-free restores |
 | Replay export | One JSON file per match (cards, counts, evidence event identifiers and locations), described by `schemas/replay.schema.json` | Phase 2 | The contract between Python and TypeScript |
 | Viewer | TypeScript (strict) + Vite + React | Phase 2 | Chosen for learning and portfolio value; React is the most widely used |
 | Pitch drawing in the viewer | Hand-written SVG components, no d3 | Phase 2 | A pitch is rectangles and arcs; a good learning exercise |
@@ -46,12 +49,15 @@ This is the record of which languages, tools, and approaches Regista uses, when 
 
 ## Repository layout (target by Phase 2)
 ```
-src/regista/        Python engine (domain/, adapters/, detectors/, cli.py)
-tests/              unit/, contract/ (synthetic fixtures only)
+src/regista/        Python engine (domain/, adapters/, detectors/, templates.py, cli.py)
+tests/              unit/ (synthetic fixtures), contract/ (local provider data, skipped when absent), golden/ (derived snapshots)
 schemas/            replay.schema.json (the Python ↔ TypeScript contract)
 viewer/             TypeScript + React + Vite app that reads exported JSON
-scripts/            download and plotting scripts
-data/  out/         git-ignored: raw provider files and generated exports
+catalog/            corpus.toml: which competition-seasons Regista uses, and in which role
+splits/             v<N>.json: frozen development/validation/test assignments (identifiers only)
+scripts/            plotting scripts
+data/               git-ignored: raw/ (pinned provider files and manifest), warehouse/ (DuckDB)
+out/                git-ignored: generated exports and data-quality reports
 ```
 
 ## Prerequisites and constraints

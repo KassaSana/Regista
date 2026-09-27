@@ -1,5 +1,7 @@
 # Data Sources
 
+Last updated: 2026-09-27
+
 Regista's code is public. Provider data is not: it is downloaded locally into `data/` and never committed.
 
 ## StatsBomb Open Data
@@ -47,10 +49,27 @@ Recorded by research (agent):
 
 | Public in this repository | Never committed or exposed |
 |---|---|
-| Source code and detectors | Raw provider files (`data/`) |
-| Tests with synthetic, hand-built events | Databases built from provider data (`*.duckdb`) |
+| Source code and detectors | Raw provider files (`data/raw/`) and their manifest |
+| Tests with synthetic, hand-built events | Databases built from provider data (`data/warehouse/`, `*.duckdb`) |
 | Derived insights, aggregates, and visuals, with attribution and logo | Copies or excerpts of raw event files, or full event exports in any schema |
+| Golden snapshots of derived output (`tests/golden/`) | Data-quality reports (`out/dq/`), which describe individual provider records |
+| The corpus catalog (`catalog/corpus.toml`) and split files (`splits/`): identifiers and choices only | |
 | Documentation | |
+
+## How provider data is stored locally
+
+Phase 2 downloads are pinned to a specific `hudl/open-data` commit and land in `data/raw/statsbomb-open-data/<commit>/`, mirroring the provider's paths. An append-only manifest (`data/raw/manifest.jsonl`) records each file's source, checksum, retrieval time, and license class. Raw files are never edited. Normalized and analytical tables live in `data/warehouse/regista.duckdb` (development matches) and `data/warehouse/held_out.duckdb` (validation and test). Both also hold the original provider records and is therefore never committed. Details: [docs/specs/phase-2-data-model.md](docs/specs/phase-2-data-model.md).
+
+## Private remote storage (implemented, not yet used)
+
+`regista data remote` can back up development raw files, the manifest, and development warehouse snapshots to a **private** Cloudflare R2 bucket (see [increment 10](docs/increments/10-remote-storage.md)).
+- The bucket must stay private: no public `r2.dev` URL and no custom domain. Access is through one bucket-scoped API token whose values are kept only in git-ignored `.env`.
+- Validation and test data are never stored there.
+
+Clause 1.2.1 asks users not to "provide the data to any third party". Whether storing the files with a private storage provider for personal, non-commercial use is compatible with it is the owner's interpretation. No upload happens until this is recorded.
+
+Human-owned item (only Kassahun ticks this):
+- [ ] Kassahun decided that private R2 storage of StatsBomb raw files and development warehouse snapshots is permitted for this personal, non-commercial project, and recorded the date.
 
 ## If Regista ever becomes commercial
 

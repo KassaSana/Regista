@@ -1,5 +1,7 @@
 # Increment 2: Domain geometry
 
+Last updated: 2026-09-27
+
 This increment introduces Regista's first domain values: nominal IDs, points,
 and a pitch with distance and angle calculations.
 
@@ -40,10 +42,11 @@ The rendered plot was visually inspected. All 32 shots cluster in the attacking
 quarter near `x=120`, with markers from both teams and both halves occupying the
 same orientation.
 
-The plotter and contract test intentionally duplicate a very small view of the
-raw event schema. That duplication remains local to verification code until
-Increment 5 introduces the real provider adapter; extracting it now would make
-temporary script types look like a supported ingest boundary.
+The plotter and contract test intentionally read a very small view of the raw
+event schema directly. Increment 3 introduced the real provider adapter, but
+these two keep their own view on purpose: a contract test that checks the
+provider's coordinates should not depend on the adapter whose assumptions it
+is checking.
 
 ## Value objects and entities
 
