@@ -23,9 +23,14 @@ from regista.adapters.statsbomb.events import load_events
 from regista.detectors.attacking_side_shift import AttackingSideShiftDetector
 from regista.domain.ids import MatchId
 from regista.domain.replay import replay
+from regista.pipeline.catalog import load_corpus
 from regista.templates import render_attacking_side_shift
 
-STATSBOMB_DATA = Path("data/statsbomb/data")
+STATSBOMB_DATA = (
+    Path("data/raw/statsbomb-open-data")
+    / load_corpus(Path("catalog/corpus.toml")).source_commit
+    / "data"
+)
 # (match identifier, competition identifier, season identifier)
 PROBE_MATCHES = ((265958, 11, 27), (3869420, 43, 106), (3869321, 43, 106))
 

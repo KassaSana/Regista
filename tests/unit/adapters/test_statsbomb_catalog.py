@@ -173,6 +173,16 @@ def test_corpus_choices_are_valid_and_reject_floating_source_references(tmp_path
         load_corpus(changed)
 
 
+def test_corpus_checksum_is_stable_across_checkout_line_endings(tmp_path: Path) -> None:
+    original = Path(__file__).resolve().parents[3] / "catalog/corpus.toml"
+    contents = original.read_bytes().replace(b"\r\n", b"\n")
+    unix = tmp_path / "unix.toml"
+    windows = tmp_path / "windows.toml"
+    unix.write_bytes(contents)
+    windows.write_bytes(contents.replace(b"\n", b"\r\n"))
+    assert load_corpus(unix).sha256 == load_corpus(windows).sha256
+
+
 def test_changed_choices_at_same_commit_have_separate_provenance(tmp_path: Path) -> None:
     original = configuration()
     changed = replace(original, review_seed=43, sha256="c" * 64)

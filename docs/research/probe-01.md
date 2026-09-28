@@ -1,6 +1,6 @@
 # Research note: Fan-value probe 01
 
-Last updated: 2026-09-27
+Last updated: 2026-09-28
 
 **Status: sheets generated, waiting for Kassahun's viewing.** This is a low-cost usability test (observations read beside a replay), not proof of the final companion experience.
 
@@ -78,6 +78,16 @@ The probe is still pending. Nothing here is a judgment.
   3. Fill in every judgment column on the sheet.
   4. Afterwards, answer the three per-match questions under Owner judgment, and ask to have the rows transferred here.
 - **Avoid priming.** [Research note 05](05-territory-and-threat.md) studies how territory relates to threat across the development corpus. It never names these three matches, but reading it first could colour your view of the Territory observations. Read it after viewing.
+
+### Windows checkout verification (2026-09-28)
+
+The four inspected development matches were fetched through the pinned
+`regista data download --include-inspected` pipeline into `data/raw/`. A
+`--verify-only` run checked all 22 source files (18,240,054 bytes) and fetched
+nothing. The probe generator now reads that pipeline's location, and regenerated
+the three sheets in `out/probe-01/` with the same per-kind counts shown above.
+The sheets and provider files remain git-ignored. Owner viewing and judgments
+are still pending.
 
 ## Counterexamples and alternative interpretations
 To be filled in after viewing.

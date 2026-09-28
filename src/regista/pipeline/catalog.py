@@ -40,7 +40,9 @@ def object_list(value: object, description: str) -> list[object]:
 
 
 def load_corpus(path: Path) -> CorpusConfiguration:
-    contents = path.read_bytes()
+    # Git may check out this text file with CRLF on Windows. Split provenance
+    # identifies its choices, so line-ending conversion must not change its hash.
+    contents = path.read_bytes().replace(b"\r\n", b"\n")
     record = object_record(tomllib.loads(contents.decode("utf-8")), "corpus")
     provider = text(record.get("provider"), "provider")
     dataset = text(record.get("dataset"), "dataset")
