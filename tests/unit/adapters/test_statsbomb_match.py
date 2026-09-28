@@ -81,6 +81,48 @@ def test_shot_type_marks_only_penalties(shot_type: str, penalty: bool) -> None:
     assert shot.penalty is penalty
 
 
+@pytest.mark.parametrize(
+    ("outcome", "scored"),
+    [({"id": 97, "name": "Goal"}, True), ({"id": 100, "name": "Saved"}, False), (None, False)],
+)
+def test_only_a_goal_outcome_marks_a_shot_as_scored(outcome: object, scored: bool) -> None:
+    details: dict[str, object] = {"type": {"id": 88, "name": "Penalty"}}
+    if outcome is not None:
+        details["outcome"] = outcome
+    record = {
+        "id": "e",
+        "index": 1,
+        "period": 1,
+        "minute": 0,
+        "second": 0,
+        "type": {"id": 16, "name": "Shot"},
+        "team": HOME,
+        "location": [108.0, 40.0],
+        "shot": details,
+    }
+
+    shot = normalize_event(record, MatchId(1)).shot
+    assert shot is not None
+    assert shot.scored is scored
+
+
+@pytest.mark.parametrize(
+    ("type_name", "credited"), [("Own Goal For", True), ("Own Goal Against", False)]
+)
+def test_only_own_goal_for_credits_a_goal(type_name: str, credited: bool) -> None:
+    record = {
+        "id": "e",
+        "index": 1,
+        "period": 1,
+        "minute": 0,
+        "second": 0,
+        "type": {"id": 0, "name": type_name},
+        "team": HOME,
+    }
+
+    assert normalize_event(record, MatchId(1)).own_goal_for is credited
+
+
 def test_an_unknown_shot_type_fails_loudly() -> None:
     record = {
         "id": "e",

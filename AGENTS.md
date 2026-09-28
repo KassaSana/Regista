@@ -3,9 +3,9 @@
 Last updated: 2026-09-28
 
 ## Scope discipline
-- Work only on the current phase in ROADMAP.md. Stop and check in after each increment.
-- Phases 3–6 are frozen until the Phase 2 gate is decided; see [STATUS.md](STATUS.md).
-- Do not add features, dependencies, or abstractions for future phases.
+- Work only on the current milestone of the product track or the active research item in ROADMAP.md (two tracks, owner decision 2026-09-28). Stop and check in after each increment or milestone.
+- Features enter the product only by promotion from research; unpromoted card types ship labeled "experimental" or not at all. See [STATUS.md](STATUS.md).
+- Do not add features, dependencies, or abstractions for later milestones or phases.
 - Stack choices live in [docs/STACK.md](docs/STACK.md); changing one is a recorded decision, not a drive-by.
 
 ## Working style

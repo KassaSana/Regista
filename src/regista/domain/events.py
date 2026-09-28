@@ -125,13 +125,15 @@ class SubstitutionDetail:
 
 @dataclass(frozen=True, slots=True)
 class ShotDetail:
-    """What Regista reads from a shot: whether it was a penalty kick.
+    """What Regista reads from a shot: whether it was a penalty kick and whether it scored.
 
     Penalties are separate from open and set-piece play; shootout kicks are
-    penalties too.
+    penalties too. ``scored`` is known at the event: the provider records the
+    outcome on the shot itself.
     """
 
     penalty: bool
+    scored: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -141,6 +143,9 @@ class Event:
     ``sequence`` is the provider's ordering and is the only safe replay order:
     provider timestamps are not guaranteed to increase monotonically.
     ``source`` names the data source so insights can cite their evidence.
+    ``own_goal_for`` marks the event that credits ``team`` with an opponent's own
+    goal; the matching event on the conceding side is not marked, so each own
+    goal counts once.
     """
 
     identifier: EventId
@@ -155,8 +160,12 @@ class Event:
     provider_record: Mapping[str, object] = field(compare=False, repr=False)
     match_fact: FormationDetail | SubstitutionDetail | None = None
     shot: ShotDetail | None = None
+    own_goal_for: bool = False
 
     def __post_init__(self) -> None:
+        if self.own_goal_for and self.action is not ActionType.OTHER:
+            message = f"{self.action.value} event {self.identifier} cannot credit an own goal"
+            raise ValueError(message)
         moves_ball = self.action in BALL_MOVING_ACTIONS
         if moves_ball and self.movement is None:
             message = f"{self.action.value} event {self.identifier} needs a ball movement"

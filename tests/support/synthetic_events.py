@@ -27,7 +27,14 @@ class EventStream:
         return self._add(team, MatchClock(period, minute, second), ActionType.OTHER, None)
 
     def shot(
-        self, team: Team, period: int, minute: int, second: int = 0, *, penalty: bool = False
+        self,
+        team: Team,
+        period: int,
+        minute: int,
+        second: int = 0,
+        *,
+        penalty: bool = False,
+        scored: bool = False,
     ) -> Event:
         """Add a shot from the edge of the box."""
         return self._add(
@@ -36,7 +43,13 @@ class EventStream:
             ActionType.SHOT,
             None,
             location=Point(x=102.0, y=40.0),
-            shot=ShotDetail(penalty=penalty),
+            shot=ShotDetail(penalty=penalty, scored=scored),
+        )
+
+    def own_goal_for(self, team: Team, period: int, minute: int, second: int = 0) -> Event:
+        """Add the event that credits ``team`` with an opponent's own goal."""
+        return self._add(
+            team, MatchClock(period, minute, second), ActionType.OTHER, None, own_goal_for=True
         )
 
     def entry(
@@ -69,6 +82,7 @@ class EventStream:
         *,
         location: Point | None = None,
         shot: ShotDetail | None = None,
+        own_goal_for: bool = False,
     ) -> Event:
         sequence = len(self.events) + 1
         event = Event(
@@ -83,6 +97,7 @@ class EventStream:
             source=SOURCE,
             provider_record={},
             shot=shot,
+            own_goal_for=own_goal_for,
         )
         self.events.append(event)
         return event

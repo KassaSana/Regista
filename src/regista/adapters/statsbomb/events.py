@@ -139,15 +139,21 @@ def normalize_event(record: Mapping[str, object], match_id: MatchId) -> Event:
         provider_record=MappingProxyType(dict(record)),
         match_fact=_match_fact(record, action, type_name),
         shot=_shot(record) if action is ActionType.SHOT else None,
+        # StatsBomb records "Own Goal For" on the team credited with the goal
+        # (the same rule as the warehouse normalizer, checked against final scores).
+        own_goal_for=type_name == "Own Goal For",
     )
 
 
 def _shot(record: Mapping[str, object]) -> ShotDetail:
-    name = _name_of(_as_mapping(record.get("shot"), "shot").get("type"), "shot.type")
+    details = _as_mapping(record.get("shot"), "shot")
+    name = _name_of(details.get("type"), "shot.type")
+    outcome = details.get("outcome")
+    scored = outcome is not None and _name_of(outcome, "shot.outcome") == "Goal"
     if name == "Penalty":
-        return ShotDetail(penalty=True)
+        return ShotDetail(penalty=True, scored=scored)
     if name in NON_PENALTY_SHOT_TYPES:
-        return ShotDetail(penalty=False)
+        return ShotDetail(penalty=False, scored=scored)
     message = f"unknown shot type {name!r}: classify it as a penalty or not"
     raise StatsBombFormatError(message)
 

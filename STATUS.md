@@ -4,8 +4,17 @@ Last updated: 2026-09-28
 
 A short snapshot of where the project stands. [ROADMAP.md](ROADMAP.md) holds the plan; increments and research notes hold the details.
 
-## Phase
-**Phase 2: first card judgments are in; the gate decision is pending.** Phases 3–6 are frozen until the gate is decided.
+## Tracks (owner decision, 2026-09-28)
+- **Product track (current):** a thin MVP. Export a development match, replay it in a viewer, surface a sparse light bulb that opens one insight with its evidence, and review the history after the match. Plan: [increment 20](docs/increments/20-mvp-plan.md).
+  | Milestone | State |
+  |---|---|
+  | M0: record the direction change | done |
+  | M1: score in the domain | done |
+  | M2: card assembly and export contract | next |
+  | M3: viewer skeleton | — |
+  | M4: light bulb, insight panel, evidence | — |
+  | M5: post-match history, end-to-end check | — |
+- **Research track:** Phase 2 first card judgments are in; probe 03 and the gate decision are pending. Phases 3–6 continue only as research; nothing enters the product until promoted.
 
 ## Card stream (`uv run regista replay --match <id>`)
 | Detector | Fires when | Cards on 800 development matches |
@@ -37,8 +46,7 @@ Product direction recorded: prefer scoreline-against-chance-quality and historic
 ## Not started, by design
 - **Validation comparison and test estimate:** after the gate passes and variants are frozen.
 - **Labeling guide and human-review labels:** needed for precision and missed moments.
-- **Replay viewer:** only if the gate shows during-play value worth prototyping.
 
 ## Health
-- 309 tests pass; Ruff lint and format pass; strict Pyright reports 0 errors.
+- 323 tests pass; Ruff lint and format pass; strict Pyright reports 0 errors.
 - The development warehouse has 800 matches; no held-out match has been opened.

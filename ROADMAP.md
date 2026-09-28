@@ -26,6 +26,13 @@ Learning and portfolio. Free StatsBomb open data is enough. Business questions a
 
 This is direction, not a commitment to build. See [research note 16](docs/research/16-chance-quality-direction.md).
 
+## Two tracks (owner decision, 2026-09-28)
+Kassahun decided to stop finishing research phases strictly in order and build the smallest usable product first. The question becomes: "If I open Regista beside a match, does this feel like a real companion product?"
+- **Product track:** a thin MVP. Export a development match → viewer with replay → a light bulb that opens one insight with its evidence → post-match history. Plan and milestones: [increment 20](docs/increments/20-mvp-plan.md).
+- **Research track:** probe 03, the Phase 2 gate decision, and later validation comparisons. Research feeds the product and no longer blocks it.
+- **Promotion rule:** a card type enters the product only by promotion from research. Until then it ships labeled "experimental" behind a toggle, or not at all. At the start: the side shift is on, the burst is experimental, chance quality waits for probe 03, and recorded facts appear as quiet context that never lights the bulb.
+- Leakage, split, and data rules are unchanged. The product exports development matches only.
+
 ## Non-goals (for now)
 - Computer vision on broadcasts
 - Player photos, club crests, league logos
@@ -76,7 +83,7 @@ No machine learning in this phase. First understand the distributions and build 
 - Full-match viewing was declined. Automated development-only audits are proxies for signal quality, never owner judgments of fan usefulness.
 - A cross-provider comparison needs matched matches, compatible definitions, and a separately frozen corpus before it can support a claim.
 
-**Scope freeze (2026-09-28):** no new Phase 3–6 work until the Phase 2 gate below is decided. Existing provisional work in those phases stays as it is, unused by the default card stream except where noted.
+**Scope freeze (2026-09-28), replaced the same day by the two-track decision above:** Phase 3–6 work proceeds only as research-track items or as MVP milestones. Features enter the product only by promotion from research; experimental cards are labeled. Existing provisional work stays as it is.
 
 ### Done
 1. Catalog: `catalog/corpus.toml`, 1,894 matches in 13 competition-seasons ([increment 5](docs/increments/05-catalog-and-frozen-splits.md)).
@@ -133,12 +140,12 @@ Known limits of this method: it cannot measure missed moments, live timing again
 ### Deferred until the gate is decided
 - Labeling guide and hand-labeled noteworthy moments on the human-review set (owned by Kassahun); needed to measure precision and missed moments on validation.
 - Feed field checklist (desk check, no purchase).
-- The minimal replay viewer (see [docs/STACK.md](docs/STACK.md)) and showing replays to 5–10 people. The key question becomes: "Which light bulb would you have opened?"
+- Showing replays to 5–10 people ("Which light bulb would you have opened?"). The minimal replay viewer itself moved to the product track (increment 20).
 - More detector candidates: field tilt (needs an owner-set minimum), player involvement, separate set-piece entry counts.
 - Log of correct but unhelpful cards. First entry: the match 3773497 "center" card (now 24:14), which is mostly a move away from the right.
 
 ## Phase 3 — Match facts already in the event data
-*Frozen until the Phase 2 gate is decided (2026-09-28).*
+*Research track only (two-track decision, 2026-09-28): nothing here enters the product until promoted.*
 - Development-only inventory (2026-09-28): [research note 07](docs/research/07-recorded-match-facts.md) found 1,600 starting lineups, 5,384 substitutions, and 743 recorded formation changes across 800 matches. A separate factual replay stream is justified provisionally; fan value and combined-stream redundancy remain unjudged.
 - Provisional implementation (2026-09-28): [recorded-fact specification](docs/specs/phase-3-recorded-match-facts.md) and [increment 13](docs/increments/13-recorded-match-facts.md) add `replay --facts`. All 800 development event files replayed with the expected fact counts. The default Phase 2 card feed is unchanged.
 - Cards from recorded formation changes (Tactical Shift), substitutions, and starting lineups.
@@ -147,7 +154,7 @@ Known limits of this method: it cannot measure missed moments, live timing again
 Gate: the cards are correct against the event data and are not redundant with Phase 2 cards.
 
 ## Phase 4 — Action value
-*Frozen until the Phase 2 gate is decided (2026-09-28).*
+*Research track only (two-track decision, 2026-09-28): nothing here enters the product until promoted.*
 - Provisional research foundation (2026-09-28): a provider-neutral action-value contract, geometric movement baseline, development-only expected-threat trainer, and synthetic equation cross-check are implemented. The full-development fitted grid is a retrospective research artifact and cannot support leakage-free replay claims for its training matches. A strict date-cutoff option supplies an earlier-trained surface for research; deployment-time provenance checks remain. See [research note 08](docs/research/08-expected-threat-foundation.md).
 - Chronological development check (2026-09-28): a surface trained on 673 pre-2023 development matches was compared on 127 later development matches. It did not improve end-location shot/goal ranking over the geometric heuristic on this proxy. No detector promotion follows; see [research note 09](docs/research/09-expected-threat-later-matches.md).
 - Heuristic valuer first (the idea from the original rating plan), then a learned possession-value model, both behind the same interface.
@@ -158,7 +165,7 @@ Gate: the cards are correct against the event data and are not redundant with Ph
 Gate: the model measurably improves card precision, or the explorer answers questions the cards cannot.
 
 ## Phase 5 — Context and provenance layer
-*Frozen until the Phase 2 gate is decided (2026-09-28).*
+*Research track only (two-track decision, 2026-09-28): nothing here enters the product until promoted.*
 - Provisional infrastructure (2026-09-28): an append-only source-claim DuckDB store and immutable kickoff snapshot enforce publication, retrieval, and store-recording cutoffs plus validity dates. It contains no curated real-world claims or context cards. See the [source-claim specification](docs/specs/phase-5-source-claims.md) and [increment 16](docs/increments/16-source-claim-store.md).
 - Read-only Wikidata research adapter (2026-09-28): a bounded team-QID query returns unreviewed head-coach tenure candidates with statement links, optional references, and date precision. It does not populate `source_claims`; live endpoint validation and owner source review remain. See [research note 10](docs/research/10-wikidata-coach-candidates.md).
 - `source_claims` table (subject, predicate, value, dates, source, retrieval time, confidence, license class).
@@ -169,7 +176,7 @@ Gate: the model measurably improves card precision, or the explorer answers ques
 Gate: every context card can answer "how do you know?" instantly.
 
 ## Phase 6 — Positional and tactical layer
-*Frozen until the Phase 2 gate is decided (2026-09-28).*
+*Research track only (two-track decision, 2026-09-28): nothing here enters the product until promoted.*
 - Event-data baseline (2026-09-28): development-only recovery-location and completed-movement directness definitions covered all 1,600 team-matches. They are retrospective ball-action descriptors, not defensive-line estimates or tactical cards. See [research note 11](docs/research/11-event-data-recovery-and-directness.md).
 - SkillCorner open tracking sample and StatsBomb 360 frames for positional experiments. `kloppy` may load them, but only inside an adapter, never in domain code.
 - Event-data comparisons with precise definitions: recovery location, directness.
