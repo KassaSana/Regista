@@ -54,6 +54,7 @@ a medical condition from a substitution or return to play.
 Synthetic tests cover publication, retrieval, and store-recorded cutoffs;
 validity boundaries; missing publication time; subject isolation; immutable
 snapshots; append-only identifiers; and UTC/URL validation. They contain no
-real player facts. A Wikidata research adapter, owner-curated source records,
+real player facts. A separate read-only Wikidata adapter now produces unreviewed
+coach-tenure candidates but cannot write claims. Owner-curated source records,
 match timezone evidence, claim corrections, and context-card evaluation remain
 future work. The Phase 5 gate is open.

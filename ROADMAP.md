@@ -156,6 +156,7 @@ Gate: the model measurably improves card precision, or the explorer answers ques
 
 ## Phase 5 — Context and provenance layer
 - Provisional infrastructure (2026-09-28): an append-only source-claim DuckDB store and immutable kickoff snapshot enforce publication, retrieval, and store-recording cutoffs plus validity dates. It contains no curated real-world claims or context cards. See the [source-claim specification](docs/specs/phase-5-source-claims.md) and [increment 16](docs/increments/16-source-claim-store.md).
+- Read-only Wikidata research adapter (2026-09-28): a bounded team-QID query returns unreviewed head-coach tenure candidates with statement links, optional references, and date precision. It does not populate `source_claims`; live endpoint validation and owner source review remain. See [research note 10](docs/research/10-wikidata-coach-candidates.md).
 - `source_claims` table (subject, predicate, value, dates, source, retrieval time, confidence, license class).
 - Point-in-time correctness: context is frozen at kickoff and must have been published before it. Timestamped in-match updates come later and must be added explicitly.
 - Wikidata for entities and coach tenures; small hand-curated player context set.
