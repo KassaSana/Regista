@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-28
 
-**Status: sheets generated, waiting for Kassahun's viewing.** This is a low-cost usability test (observations read beside a replay), not proof of the final companion experience.
+**Status: sheets generated; full-match viewing declined by Kassahun on 2026-09-28.** The owner judgment columns remain blank. This proposed usability test does not establish fan value; automated development-only evaluation continues in [research note 12](12-side-shift-automated-audit.md).
 
 An [agent mechanical pre-review](03-probe-01-mechanical-review.md) reproduced the observation counts and checked sampled prefixes on 2026-09-27. It records implementation limitations and clustered observations; it does not supply the owner judgments or complete this probe.
 
@@ -69,10 +69,10 @@ Mechanical notes (agent), to check against the viewing:
 - **Involvement early in a match** compares against only the first few minutes, a thin baseline.
 - **Wording.** The Phase 1 template produces "Netherlands's" for team names that end in s.
 
-## Ready to view (checked 2026-09-27)
-The probe is still pending. Nothing here is a judgment.
+## Prepared sheets (checked 2026-09-27)
+The sheets remain available, but there is no planned full-match viewing. Nothing here is a judgment.
 - **Reproducible.** From committed code (`scripts/research/probe_01.py`, SHA-256 `bbe5b7e0…c520`, unchanged), `uv run python scripts/research/probe_01.py --output <empty directory>` regenerated all three sheets byte-for-byte identical to the existing `out/probe-01/` sheets. The sheets are git-ignored local files, because they describe provider events.
-- **Viewing steps:**
+- **Original viewing steps, if the owner revisits this method:**
   1. Open one sheet from `out/probe-01/` next to its official replay (links under Data).
   2. Read a row only when the replay clock reaches it.
   3. Fill in every judgment column on the sheet.
@@ -93,7 +93,7 @@ are still pending.
 To be filled in after viewing.
 
 ## Owner judgment
-Kassahun's judgment of fan usefulness. Agents leave this section empty. Fill in the sheets while watching, then copy the rows here (or ask to have them transferred).
+Kassahun's judgment of fan usefulness. Agents leave this section empty. Full-match viewing was declined on 2026-09-28, so no judgment is recorded.
 
 For each match, also record:
 - whether you already knew how the match went;
@@ -101,4 +101,4 @@ For each match, also record:
 - which one card, if any, would have made you look away from the television.
 
 ## Decision
-Pending the owner judgment.
+The full-match viewing method was declined by the owner. The sheets remain available, and automated checks proceed without claiming a fan-usefulness result.
