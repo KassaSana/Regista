@@ -30,3 +30,24 @@ jobs:
         run: uv run pyright
       - name: Tests (contract tests skip without local provider data)
         run: uv run pytest -rs
+
+  viewer:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: viewer
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: viewer/.nvmrc
+          cache: npm
+          cache-dependency-path: viewer/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Generated types match the schema
+        run: npm run types && git diff --exit-code src/replayTypes.ts
+      - name: Biome, TypeScript, and Vitest
+        run: npm run check
+      - name: End-to-end test (synthetic export, runner's Chrome)
+        run: npm run e2e

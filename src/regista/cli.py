@@ -106,7 +106,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="write the viewer's replay export for one development match",
     )
     export_command.add_argument(
-        "--match", type=int, required=True, help="StatsBomb match identifier"
+        "--match",
+        type=int,
+        action="append",
+        required=True,
+        help="StatsBomb match identifier (repeat to export several)",
     )
     export_command.add_argument("--corpus", type=Path, default=Path("catalog/corpus.toml"))
     export_command.add_argument("--raw-directory", type=Path, default=Path("data/raw"))
@@ -663,49 +667,48 @@ def _run_data(arguments: argparse.Namespace) -> int:
 
 
 def _run_export(arguments: argparse.Namespace) -> int:
-    """Write one development match's replay export and refresh the export index.
+    """Write development matches' replay exports and refresh the export index.
 
-    The split is checked first, from identifiers alone, so a held-out match's
-    event file is never opened.
+    Every requested match is checked against the split first, from identifiers
+    alone, so no event file is opened when any of them is held out.
     """
-    match_id = MatchId(arguments.match)
-    require_development([match_id], split_buckets(arguments.split_file))
+    match_ids = [MatchId(identifier) for identifier in dict.fromkeys(arguments.match)]
+    require_development(match_ids, split_buckets(arguments.split_file))
     configuration = load_corpus(arguments.corpus)
     raw_directory: Path = arguments.raw_directory
     catalog = load_catalog(configuration, raw_directory)
-    record = load_match_records(configuration, catalog, raw_directory, [match_id])[match_id]
-    events_path = (
-        raw_directory
-        / "statsbomb-open-data"
-        / configuration.source_commit
-        / "data/events"
-        / f"{match_id}.json"
-    )
-    if not events_path.exists():
-        raise ValueError(f"no event file for match {match_id} at {events_path}")
-    export = build_match_export(load_events(events_path, match_id), record)
-
+    records = load_match_records(configuration, catalog, raw_directory, match_ids)
+    events_directory = raw_directory / "statsbomb-open-data" / configuration.source_commit
     output_directory: Path = arguments.output_directory
     output_directory.mkdir(parents=True, exist_ok=True)
-    output_path = output_directory / f"{match_id}.json"
-    output_path.write_text(json.dumps(export, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     index_path = output_directory / "index.json"
     entries: dict[int, dict[str, object]] = {}
     if index_path.exists():
         for entry in json.loads(index_path.read_text(encoding="utf-8")):
             entries[int(entry["id"])] = entry
-    entries[match_id] = {
-        "id": match_id,
-        "date": record.match_date.isoformat(),
-        "competition": record.competition_name,
-        "home": record.home_team.name,
-        "away": record.away_team.name,
-    }
+    for match_id in match_ids:
+        events_path = events_directory / "data/events" / f"{match_id}.json"
+        if not events_path.exists():
+            raise ValueError(f"no event file for match {match_id} at {events_path}")
+        record = records[match_id]
+        export = build_match_export(load_events(events_path, match_id), record)
+        output_path = output_directory / f"{match_id}.json"
+        output_path.write_text(
+            json.dumps(export, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        # Pre-match metadata only: the index never carries a result or a card count.
+        entries[match_id] = {
+            "id": match_id,
+            "date": record.match_date.isoformat(),
+            "competition": record.competition_name,
+            "home": record.home_team.name,
+            "away": record.away_team.name,
+        }
+        print(f"Wrote {output_path} ({len(cast(list[object], export['cards']))} cards)")
     index_path.write_text(
         json.dumps([entries[key] for key in sorted(entries)], indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    print(f"Wrote {output_path} ({len(cast(list[object], export['cards']))} cards)")
     return 0
 
 

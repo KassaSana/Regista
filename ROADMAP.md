@@ -28,7 +28,7 @@ This is direction, not a commitment to build. See [research note 16](docs/resear
 
 ## Two tracks (owner decision, 2026-09-28)
 Kassahun decided to stop finishing research phases strictly in order and build the smallest usable product first. The question becomes: "If I open Regista beside a match, does this feel like a real companion product?"
-- **Product track:** a thin MVP. Export a development match → viewer with replay → a light bulb that opens one insight with its evidence → post-match history. Plan and milestones: [increment 20](docs/increments/20-mvp-plan.md).
+- **Product track:** a thin MVP. Export a development match → viewer with replay → a light bulb that opens one insight with its evidence → post-match history. Plan and milestones: [increment 20](docs/increments/20-mvp-plan.md). **MVP complete 2026-09-28**; next, the owner uses it on several matches and records impressions, which decide what research the product needs.
 - **Research track:** probe 03, the Phase 2 gate decision, and later validation comparisons. Research feeds the product and no longer blocks it.
 - **Promotion rule:** a card type enters the product only by promotion from research. Until then it ships labeled "experimental" behind a toggle, or not at all. At the start: the side shift is on, the burst is experimental, chance quality waits for probe 03, and recorded facts appear as quiet context that never lights the bulb.
 - Leakage, split, and data rules are unchanged. The product exports development matches only.

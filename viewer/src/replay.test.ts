@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { syntheticExport } from "./fixtures/syntheticExport";
-import { clockAt, formatClock, periodLabel, positionOf, timelineOf, visibleAt } from "./replay";
+import {
+  breakBetween,
+  breakLabel,
+  clockAt,
+  formatClock,
+  isBreak,
+  periodLabel,
+  positionOf,
+  timelineOf,
+  visibleAt,
+} from "./replay";
 import type { Clock } from "./replayTypes";
 
 const timeline = timelineOf(syntheticExport.periods);
@@ -91,5 +101,29 @@ describe("labels", () => {
     expect(periodLabel(7)).toBe("Period 7");
     expect(formatClock({ period: 2, minute: 93, second: 5 })).toBe("93:05");
     expect(formatClock({ period: 4, minute: 120, second: 0 })).toBe("120:00");
+  });
+});
+
+describe("breaks", () => {
+  const halfTime = 47 * 60;
+
+  it("stops playback at half time and at full time, once each", () => {
+    expect(breakBetween(halfTime - 5, halfTime + 5, timeline)?.period).toBe(1);
+    expect(breakBetween(halfTime - 5, halfTime, timeline)?.period).toBe(1);
+    // Resuming from the break itself does not stop again.
+    expect(breakBetween(halfTime, halfTime + 5, timeline)).toBeUndefined();
+    expect(breakBetween(timeline.total - 1, timeline.total, timeline)?.period).toBe(2);
+    expect(breakBetween(10, 20, timeline)).toBeUndefined();
+  });
+
+  it("names half time and full time", () => {
+    const [first, second] = timeline.segments;
+    if (first === undefined || second === undefined) {
+      throw new Error("fixture needs two periods");
+    }
+    expect(breakLabel(first, timeline)).toBe("Half time");
+    expect(breakLabel(second, timeline)).toBe("Full time");
+    expect(isBreak(halfTime, timeline)).toBe(true);
+    expect(isBreak(halfTime + 1, timeline)).toBe(false);
   });
 });

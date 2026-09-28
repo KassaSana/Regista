@@ -12,6 +12,28 @@ import type { Card, Clock, RegistaReplayExport } from "../replayTypes";
 
 const clock = (period: number, minute: number, second = 0): Clock => ({ period, minute, second });
 
+// Side-shift evidence is entries (arrows into the final third); burst evidence is shots (dots).
+const evidenceFor = (id: string, kind: Card["kind"], at: Clock): Card["evidence"] =>
+  kind === "side_shift"
+    ? [10, 14, 20].map((y, index) => ({
+        event_id: `${id}-entry-${index}`,
+        role: "recent" as const,
+        clock: at,
+        team_id: 1,
+        action: "pass",
+        start: { x: 70, y },
+        end: { x: 88, y: y - 2 },
+      }))
+    : [36, 44].map((y, index) => ({
+        event_id: `${id}-shot-${index}`,
+        role: "shot" as const,
+        clock: at,
+        team_id: 1,
+        action: "shot",
+        start: { x: 106, y },
+        end: null,
+      }));
+
 const card = (id: string, kind: Card["kind"], at: Clock, home: number, away: number): Card => ({
   id,
   kind,
@@ -21,8 +43,8 @@ const card = (id: string, kind: Card["kind"], at: Clock, home: number, away: num
   trigger_event_id: `${id}-trigger`,
   score: { home, away },
   sentence: `Synthetic ${kind} card.`,
-  evidence_lines: [],
-  evidence: [],
+  evidence_lines: ["synthetic evidence line"],
+  evidence: evidenceFor(id, kind, at),
   sources: ["Synthetic"],
 });
 

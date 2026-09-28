@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-28
 
-**Status:** M0–M4 done; M5 next. Owner decision, 2026-09-28: build a thin end-to-end product before finishing every research phase. See the two-track section of [ROADMAP.md](../../ROADMAP.md).
+**Status:** MVP complete (M0–M5 done, 2026-09-28). Owner decision, 2026-09-28: build a thin end-to-end product before finishing every research phase. See the two-track section of [ROADMAP.md](../../ROADMAP.md).
 
 ## Context
 Phase 2 has produced two working detectors (attacking side shift, attacking burst), a factual stream (lineups, substitutions, formation changes), and a card judgment (probe 02). Probe 03 on chance quality is waiting for your judgment. Until this decision the roadmap blocked any viewer until the Phase 2 gate was decided, and froze Phases 3–6. You have decided to stop finishing research phases in order and build the smallest usable product first:
@@ -208,3 +208,47 @@ Then run `npm run dev`, open the app in the browser pane, and play 3773497. Conf
   - no page overflow at 375 px, and the bulb sits below the team names (measured).
 - **Layout fixes made during the check:** the bulb collided with the away name at 375 px, and the evidence table wrapped. The bulb moved into the clock row, and the table now scrolls inside its box.
 - **Known limit:** the browser pane cropped phone-size screenshots, so the phone check rests on DOM measurements.
+
+### M5: breaks, history, end-to-end check, and CI (2026-09-28)
+- **Breaks:** playback stops exactly at every period end. `breakBetween` in `replay.ts` is tested; resuming from a break never stops again. At half time and full time the screen switches to "Insights so far" with a summary (the break and the score), and Continue resumes play.
+- **History:** a tab with every insight surfaced so far, in match order. Each entry shows its clock, the score then, the sentence, and "Why this insight?". It never lists a later card, and it counts hidden experimental insights without showing them. Viewing it marks those insights seen. A match with no card says "Nothing stood out so far. Regista stays quiet when nothing matters."
+- **Playback timing:** playback now runs on a wall-clock timer instead of animation frames. Browsers stop animation frames in hidden tabs, which froze the replay whenever the viewer was not in the foreground, and a companion often sits in a background tab.
+- **Export:** `regista export` accepts repeated `--match`. One held-out match refuses the whole request, and no event file is read (tested).
+- **End-to-end test:** Playwright (`npm run e2e`) runs on a synthetic export served through `REGISTA_EXPORTS_DIR`, on its own port, with the installed Chrome. It covers:
+  - picking a match;
+  - the bulb off, then lit at the card's second;
+  - the panel and its pitch evidence;
+  - the half-time stop, the summary, and Continue;
+  - the experimental reveal;
+  - the full-time stop and the history;
+  - scrubbing back hiding later insights;
+  - no console errors;
+  - a second, quiet case.
+- **Favicon:** an inline icon, because the browser's automatic `/favicon.ico` request was a 404 on every page.
+- **CI:** a `viewer` job checks that the generated types match the schema, then runs `npm run check` and `npm run e2e`, on synthetic data only.
+- **Checked in the browser on real development exports:**
+  - match 3773497 stops at half time (47:22) at 2–0 with 1 insight, plus a note of 1 hidden experimental insight;
+  - Continue resumes the second half;
+  - it stops at full time (94:06) at 2–1 with 2 insights and no Continue;
+  - match 3802683 (Paris Saint-Germain v AS Monaco, no cards) never lights the bulb, and its history says so.
+
+## MVP summary
+What it does:
+1. Export development matches.
+2. Pick one in the viewer.
+3. Play or scrub with the correct score, clock, goals, and changes.
+4. A quiet light bulb lights only when an insight surfaces, and it opens one insight with its evidence on a pitch.
+5. Playback pauses at breaks with everything noticed so far.
+6. The history can be read at any moment, without spoilers.
+
+The side shift is on by default; the burst is experimental and hidden by default.
+
+Deferred:
+- chance-quality cards (probe 03);
+- the Phase 2 gate and its validation and test estimates;
+- the Phase 3–6 research content;
+- a language model;
+- live data;
+- any deployment or public hosting (it needs the logo and a license re-check).
+
+Owner items: see "Waiting on Kassahun" in [STATUS.md](../../STATUS.md).

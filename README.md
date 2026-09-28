@@ -52,18 +52,32 @@ file. The export follows `schemas/replay.schema.json` and is thin by design:
 period boundaries, goals with the running score, cards with only their own
 evidence events, and recorded facts, never the full event stream.
 
-### Run the viewer
+### Run the MVP
 
 ```console
-uv run regista export --match 3773497
+uv run regista export --match 3773497 --match 3753972 --match 3895052
 cd viewer
 npm install
 npm run dev
 ```
 
-Open <http://localhost:5173>, pick a match, and play or scrub through it. The
-viewer only reads exports from `out/exports` through its development server;
-`npm run check` runs Biome, the TypeScript compiler, and Vitest.
+Open <http://localhost:5173> and pick a match. Play it at 1×, 10×, or 60×, or
+scrub to any moment. The score, clock, goals, and substitutions follow the
+replay. When Regista notices something, a small light bulb lights beside the
+clock; open it for one insight, and "Why this insight?" shows the evidence on a
+pitch. Playback pauses at half time and full time with everything Regista
+noticed so far, and the "Insights so far" tab lists them at any moment. Nothing
+is ever shown before its own moment in the match. Experimental insight types
+(currently the attacking burst) stay hidden unless "Show experimental insights"
+is on.
+
+`regista export` accepts development matches only (repeat `--match` for
+several) and refuses the whole request if any match is held out. The viewer
+reads exports from `out/exports` through its development server only; a build
+never bundles one.
+
+Viewer checks: `npm run check` (Biome, TypeScript, Vitest) and `npm run e2e`
+(Playwright on a synthetic export, using the installed Chrome).
 
 Provider data belongs under `data/` and is intentionally excluded from version
 control.

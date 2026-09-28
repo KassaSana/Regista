@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Bulb } from "./Bulb";
+import { History } from "./History";
 import { InsightPanel } from "./InsightPanel";
 import { bulbOf, shownCards } from "./insights";
 import {
+  breakBetween,
+  breakLabel,
   type Fact,
   formatClock,
   type Goal,
   periodLabel,
+  type Segment,
   type Timeline,
   timelineOf,
   visibleAt,
@@ -15,13 +19,23 @@ import type { RegistaReplayExport } from "./replayTypes";
 
 const SPEEDS = [1, 10, 60] as const;
 type Speed = (typeof SPEEDS)[number];
+type View = "live" | "history";
+// Ten updates a second keep the clock smooth at 60x without busy rendering.
+const TICK_MILLISECONDS = 100;
 
 export function MatchScreen({ exported }: { exported: RegistaReplayExport }) {
   const timeline = useMemo(() => timelineOf(exported.periods), [exported]);
   const [position, setPosition] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<Speed>(10);
-  usePlayback(playing, speed, timeline.total, position, setPosition, () => setPlaying(false));
+  const [view, setView] = useState<View>("live");
+  // The break playback stopped at; cleared as soon as the position moves on.
+  const [breakAt, setBreakAt] = useState<Segment | null>(null);
+  usePlayback(playing, speed, timeline, position, setPosition, (segment) => {
+    setPlaying(false);
+    setBreakAt(segment);
+    setView("history");
+  });
   const [showExperimental, setShowExperimental] = useExperimentalPreference();
   const [readIds, setReadIds] = useState<ReadonlySet<string>>(new Set());
   const [openId, setOpenId] = useState<string | null>(null);
@@ -34,11 +48,22 @@ export function MatchScreen({ exported }: { exported: RegistaReplayExport }) {
   const bulb = bulbOf(shown, readIds);
   // A card hidden again (scrubbed back past it, or toggled off) closes the panel.
   const openIndex = shown.findIndex((card) => card.id === openId);
+  const atBreak = breakAt !== null && position === breakAt.offset + breakAt.length ? breakAt : null;
+
+  // Everything listed in the history counts as seen.
+  const shownKey = shown.map((card) => card.id).join(",");
+  useEffect(() => {
+    if (view !== "history" || shownKey === "") {
+      return;
+    }
+    setReadIds((read) => new Set([...read, ...shownKey.split(",")]));
+  }, [view, shownKey]);
 
   const open = (cardId: string | undefined) => {
     if (cardId === undefined) {
       return;
     }
+    setView("live");
     setOpenId(cardId);
     setReadIds((read) => new Set(read).add(cardId));
   };
@@ -46,8 +71,17 @@ export function MatchScreen({ exported }: { exported: RegistaReplayExport }) {
   const togglePlay = () => {
     if (finished) {
       setPosition(0);
+      setBreakAt(null);
+    }
+    if (!playing) {
+      setView("live");
     }
     setPlaying(!playing);
+  };
+
+  const scrub = (next: number) => {
+    setBreakAt(null);
+    setPosition(next);
   };
 
   return (
@@ -60,13 +94,15 @@ export function MatchScreen({ exported }: { exported: RegistaReplayExport }) {
         <span className="team away">{away.name}</span>
         <div className="clock-row">
           <span className="clock">
-            {periodLabel(visible.clock.period)} · {formatClock(visible.clock)}
+            {atBreak !== null
+              ? breakLabel(atBreak, timeline)
+              : `${periodLabel(visible.clock.period)} · ${formatClock(visible.clock)}`}
           </span>
           <Bulb bulb={bulb} onOpen={() => open(bulb.opens?.id)} />
         </div>
       </div>
 
-      {openIndex >= 0 && (
+      {view === "live" && openIndex >= 0 && (
         <InsightPanel
           cards={shown}
           index={openIndex}
@@ -105,9 +141,48 @@ export function MatchScreen({ exported }: { exported: RegistaReplayExport }) {
         </label>
       </div>
 
-      <Scrubber timeline={timeline} position={position} onChange={setPosition} />
+      <Scrubber timeline={timeline} position={position} onChange={scrub} />
 
-      <SoFar goals={visible.goals} facts={visible.facts} teamName={teamName} />
+      <div className="tabs" role="tablist" aria-label="Match views">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "live"}
+          onClick={() => setView("live")}
+        >
+          Live
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "history"}
+          onClick={() => setView("history")}
+        >
+          Insights so far ({shown.length})
+        </button>
+      </div>
+
+      {view === "live" ? (
+        <SoFar goals={visible.goals} facts={visible.facts} teamName={teamName} />
+      ) : (
+        <History
+          cards={shown}
+          hiddenExperimental={visible.cards.length - shown.length}
+          breakTitle={atBreak === null ? null : breakLabel(atBreak, timeline)}
+          score={visible.score}
+          teamName={teamName}
+          homeName={home.name}
+          awayName={away.name}
+          onContinue={
+            atBreak === null || finished
+              ? null
+              : () => {
+                  setView("live");
+                  setPlaying(true);
+                }
+          }
+        />
+      )}
     </section>
   );
 }
@@ -134,17 +209,24 @@ function useExperimentalPreference(): [boolean, (value: boolean) => void] {
   return [value, update];
 }
 
-/** Advance the replay position in real time while playing, then stop at full time. */
+/**
+ * Advance the replay position in real time while playing. Playback stops at
+ * every period end (half time, full time) so the history can be read at breaks.
+ *
+ * A timer measured against wall-clock time drives it rather than animation
+ * frames, which browsers stop in hidden tabs: a companion often sits in a
+ * background tab beside the match, and must keep time there too.
+ */
 function usePlayback(
   playing: boolean,
   speed: Speed,
-  total: number,
+  timeline: Timeline,
   position: number,
   setPosition: (position: number) => void,
-  onFinished: () => void,
+  onBreak: (segment: Segment) => void,
 ) {
-  const finishedRef = useRef(onFinished);
-  finishedRef.current = onFinished;
+  const breakRef = useRef(onBreak);
+  breakRef.current = onBreak;
   // The loop reads the latest position (including scrubbing) without restarting.
   const positionRef = useRef(position);
   positionRef.current = position;
@@ -152,23 +234,25 @@ function usePlayback(
     if (!playing) {
       return;
     }
-    let frame = 0;
     let last = performance.now();
-    const tick = (now: number) => {
+    const tick = () => {
+      const now = performance.now();
       const elapsed = (now - last) / 1000;
       last = now;
-      const next = Math.min(positionRef.current + elapsed * speed, total);
-      positionRef.current = next;
-      setPosition(next);
-      if (next >= total) {
-        finishedRef.current();
-        return;
+      const from = positionRef.current;
+      const next = Math.min(from + elapsed * speed, timeline.total);
+      const crossed = breakBetween(from, next, timeline);
+      const stop = crossed === undefined ? next : crossed.offset + crossed.length;
+      positionRef.current = stop;
+      setPosition(stop);
+      if (crossed !== undefined) {
+        window.clearInterval(timer);
+        breakRef.current(crossed);
       }
-      frame = requestAnimationFrame(tick);
     };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [playing, speed, total, setPosition]);
+    const timer = window.setInterval(tick, TICK_MILLISECONDS);
+    return () => window.clearInterval(timer);
+  }, [playing, speed, timeline, setPosition]);
 }
 
 function Scrubber({

@@ -4,7 +4,10 @@ import react from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
 
 // Exports are written by `uv run regista export` into the git-ignored out/exports.
-const EXPORTS_DIRECTORY = resolve(import.meta.dirname, "../out/exports");
+// End-to-end tests point REGISTA_EXPORTS_DIR at synthetic exports instead.
+const EXPORTS_DIRECTORY = resolve(
+  process.env.REGISTA_EXPORTS_DIR ?? resolve(import.meta.dirname, "../out/exports"),
+);
 
 /**
  * Serve /exports/* from out/exports during development only.

@@ -529,3 +529,83 @@ h2 {
   margin-top: 12px;
   padding-top: 8px;
 }
+
+/* Live and history views. */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-top: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabs button {
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.tabs button[aria-selected="true"] {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.tabs + .so-far,
+.history {
+  margin-top: 16px;
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+.break-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+}
+
+.break-title {
+  margin: 0;
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+.break-score {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.break-summary .play {
+  margin-left: auto;
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.history-item {
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.history-item .insight-sentence {
+  font-size: 1rem;
+}

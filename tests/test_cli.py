@@ -233,11 +233,14 @@ def test_export_refuses_a_held_out_match_before_reading_any_provider_file(
     )
     output = tmp_path / "exports"
 
+    # A held-out match refuses the whole request, even beside a development match.
     for match in ("3", "404"):
         with pytest.raises(SystemExit):
             main(
                 [
                     "export",
+                    "--match",
+                    "1",
                     "--match",
                     match,
                     "--split-file",

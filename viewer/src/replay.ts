@@ -113,3 +113,26 @@ export function periodLabel(period: number): string {
 export function formatClock(clock: Clock): string {
   return `${String(clock.minute).padStart(2, "0")}:${String(clock.second).padStart(2, "0")}`;
 }
+
+/**
+ * The first period whose end lies in (from, to]: playback crossing it pauses
+ * there for a break (half time, the end of extra-time halves, full time).
+ */
+export function breakBetween(from: number, to: number, timeline: Timeline): Segment | undefined {
+  return timeline.segments.find((segment) => {
+    const end = segment.offset + segment.length;
+    return from < end && end <= to;
+  });
+}
+
+/** Whether a replay position sits exactly at the end of a period. */
+export function isBreak(position: number, timeline: Timeline): boolean {
+  return timeline.segments.some((segment) => segment.offset + segment.length === position);
+}
+
+export function breakLabel(segment: Segment, timeline: Timeline): string {
+  if (segment === timeline.segments.at(-1)) {
+    return "Full time";
+  }
+  return segment.period === 1 ? "Half time" : `End of ${periodLabel(segment.period).toLowerCase()}`;
+}

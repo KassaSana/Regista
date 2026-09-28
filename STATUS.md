@@ -5,7 +5,7 @@ Last updated: 2026-09-28
 A short snapshot of where the project stands. [ROADMAP.md](ROADMAP.md) holds the plan; increments and research notes hold the details.
 
 ## Tracks (owner decision, 2026-09-28)
-- **Product track (current):** a thin MVP. Export a development match, replay it in a viewer, surface a sparse light bulb that opens one insight with its evidence, and review the history after the match. Plan: [increment 20](docs/increments/20-mvp-plan.md).
+- **Product track: MVP complete (2026-09-28).** A thin MVP. Export a development match, replay it in a viewer, surface a sparse light bulb that opens one insight with its evidence, and review the history after the match. Plan: [increment 20](docs/increments/20-mvp-plan.md).
   | Milestone | State |
   |---|---|
   | M0: record the direction change | done |
@@ -13,7 +13,9 @@ A short snapshot of where the project stands. [ROADMAP.md](ROADMAP.md) holds the
   | M2: card assembly and export contract | done |
   | M3: viewer skeleton | done |
   | M4: light bulb, insight panel, evidence | done |
-  | M5: post-match history, end-to-end check | next |
+  | M5: breaks, history, end-to-end check, CI | done |
+
+  Run it: see "Run the MVP" in the [README](README.md).
 - **Research track:** Phase 2 first card judgments are in; probe 03 and the gate decision are pending. Phases 3–6 continue only as research; nothing enters the product until promoted.
 
 ## Card stream (`uv run regista replay --match <id>`)
@@ -33,6 +35,12 @@ All 14 packet cards were judged ([probe 02](docs/research/probe-02.md)):
 Product direction recorded: prefer scoreline-against-chance-quality and historically unusual insights over raw counts ([research note 16](docs/research/16-chance-quality-direction.md)). No detector changed yet. [Research note 17](docs/research/17-score-against-chance-quality.md) replays a score-against-chance-quality candidate: it fires in 15% of matches at a 1.0 xG margin, but mostly where the better team also out-shoots its opponent.
 
 ## Waiting on Kassahun
+**From the MVP (2026-09-28):**
+- **Use it:** play 3–5 exported matches in the viewer and write down, per insight, whether you would have opened the bulb and whether it told you something the score and your eyes had not. Only your judgment answers the MVP question; agents must not fill it in.
+- **StatsBomb logo:** the viewer shows "Data: StatsBomb" with an empty placeholder where the official logo goes. Supply the asset and confirm its usage terms ([DATA_SOURCES.md](DATA_SOURCES.md); the checkbox stays unchecked). Required before anything is shown publicly.
+- **Burst card:** it ships as experimental, hidden by default. Keep it experimental, drop it, or rework it (see item 1 below).
+
+**Research track:**
 0. **Probe 03** ([note](docs/research/probe-03.md)): judge the 12 chance-quality examples in `out/phase2-chance-quality/packet.html` (regenerate with `cd scripts/research && uv run python phase2_chance_quality_packet.py`), then send the exported answers. Open it in a normal browser if possible; the app's preview pane cannot save answers.
 1. **Gate decision:** set a pass bar (after the fact, and recorded as such) and decide.
    - Pass: validation comparison.
@@ -49,5 +57,5 @@ Product direction recorded: prefer scoreline-against-chance-quality and historic
 
 ## Health
 - 334 Python tests pass; Ruff lint and format pass; strict Pyright reports 0 errors.
-- Viewer: 22 Vitest tests pass; Biome and strict TypeScript are clean.
+- Viewer: 24 Vitest tests and 2 Playwright end-to-end tests pass; Biome and strict TypeScript are clean.
 - The development warehouse has 800 matches; no held-out match has been opened.
