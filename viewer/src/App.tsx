@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Attribution } from "./Attribution";
 import { type ExportIndexEntry, loadExport, loadIndex } from "./exports";
 import { MatchScreen } from "./MatchScreen";
 import type { RegistaReplayExport } from "./replayTypes";
@@ -79,16 +80,5 @@ function MatchList({
         ))}
       </ul>
     </section>
-  );
-}
-
-/** Required wherever StatsBomb-derived analysis is shown (DATA_SOURCES.md). */
-export function Attribution() {
-  return (
-    <footer className="attribution">
-      Data: StatsBomb
-      {/* Placeholder: the owner supplies the official StatsBomb logo and confirms its terms. */}
-      <span className="logo-placeholder" title="StatsBomb logo placeholder" />
-    </footer>
   );
 }

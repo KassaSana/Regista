@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Bulb } from "./Bulb";
+import { InsightPanel } from "./InsightPanel";
+import { bulbOf, shownCards } from "./insights";
 import {
   type Fact,
   formatClock,
@@ -19,11 +22,26 @@ export function MatchScreen({ exported }: { exported: RegistaReplayExport }) {
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<Speed>(10);
   usePlayback(playing, speed, timeline.total, position, setPosition, () => setPlaying(false));
+  const [showExperimental, setShowExperimental] = useExperimentalPreference();
+  const [readIds, setReadIds] = useState<ReadonlySet<string>>(new Set());
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const visible = visibleAt(exported, timeline, position);
   const { home, away } = exported.match;
   const teamName = (teamId: number) => (teamId === home.id ? home.name : away.name);
   const finished = position >= timeline.total;
+  const shown = shownCards(visible.cards, showExperimental);
+  const bulb = bulbOf(shown, readIds);
+  // A card hidden again (scrubbed back past it, or toggled off) closes the panel.
+  const openIndex = shown.findIndex((card) => card.id === openId);
+
+  const open = (cardId: string | undefined) => {
+    if (cardId === undefined) {
+      return;
+    }
+    setOpenId(cardId);
+    setReadIds((read) => new Set(read).add(cardId));
+  };
 
   const togglePlay = () => {
     if (finished) {
@@ -34,16 +52,31 @@ export function MatchScreen({ exported }: { exported: RegistaReplayExport }) {
 
   return (
     <section className="match">
-      <div className="scoreboard" aria-live="polite">
+      <div className="scoreboard">
         <span className="team home">{home.name}</span>
         <span className="score">
           {visible.score.home} – {visible.score.away}
         </span>
         <span className="team away">{away.name}</span>
-        <span className="clock">
-          {periodLabel(visible.clock.period)} · {formatClock(visible.clock)}
-        </span>
+        <div className="clock-row">
+          <span className="clock">
+            {periodLabel(visible.clock.period)} · {formatClock(visible.clock)}
+          </span>
+          <Bulb bulb={bulb} onOpen={() => open(bulb.opens?.id)} />
+        </div>
       </div>
+
+      {openIndex >= 0 && (
+        <InsightPanel
+          cards={shown}
+          index={openIndex}
+          teamName={teamName}
+          homeName={home.name}
+          awayName={away.name}
+          onStep={(index) => open(shown[index]?.id)}
+          onClose={() => setOpenId(null)}
+        />
+      )}
 
       <div className="controls">
         <button type="button" className="play" onClick={togglePlay}>
@@ -62,6 +95,14 @@ export function MatchScreen({ exported }: { exported: RegistaReplayExport }) {
             </button>
           ))}
         </fieldset>
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={showExperimental}
+            onChange={(event) => setShowExperimental(event.target.checked)}
+          />
+          Show experimental insights
+        </label>
       </div>
 
       <Scrubber timeline={timeline} position={position} onChange={setPosition} />
@@ -69,6 +110,28 @@ export function MatchScreen({ exported }: { exported: RegistaReplayExport }) {
       <SoFar goals={visible.goals} facts={visible.facts} teamName={teamName} />
     </section>
   );
+}
+
+const EXPERIMENTAL_KEY = "regista.showExperimental";
+
+/** A per-viewer convenience; storage can be missing or blocked, so it never fails. */
+function useExperimentalPreference(): [boolean, (value: boolean) => void] {
+  const [value, setValue] = useState(() => {
+    try {
+      return localStorage.getItem(EXPERIMENTAL_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
+  const update = (next: boolean) => {
+    setValue(next);
+    try {
+      localStorage.setItem(EXPERIMENTAL_KEY, String(next));
+    } catch {
+      // Keep the choice for this session only.
+    }
+  };
+  return [value, update];
 }
 
 /** Advance the replay position in real time while playing, then stop at full time. */

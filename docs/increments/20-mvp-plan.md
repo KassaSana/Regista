@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-28
 
-**Status:** M0–M3 done; M4 next. Owner decision, 2026-09-28: build a thin end-to-end product before finishing every research phase. See the two-track section of [ROADMAP.md](../../ROADMAP.md).
+**Status:** M0–M4 done; M5 next. Owner decision, 2026-09-28: build a thin end-to-end product before finishing every research phase. See the two-track section of [ROADMAP.md](../../ROADMAP.md).
 
 ## Context
 Phase 2 has produced two working detectors (attacking side shift, attacking burst), a factual stream (lineups, substitutions, formation changes), and a card judgment (probe 02). Probe 03 on chance quality is waiting for your judgment. Until this decision the roadmap blocked any viewer until the Phase 2 gate was decided, and froze Phases 3–6. You have decided to stop finishing research phases in order and build the smallest usable product first:
@@ -177,3 +177,34 @@ Then run `npm run dev`, open the app in the browser pane, and play 3773497. Conf
   - playback at 60× stops at 94:06 on 2–1;
   - no horizontal scroll at 375 px, and no console errors;
   - path-traversal probes did not reach files outside `out/exports`.
+
+### M4: light bulb, insight panel, and evidence (2026-09-28)
+- `insights.ts` (pure):
+  - `shownCards` works on cards already visible at the replay position, so the prefix rule carries over;
+  - experimental cards stay hidden unless the toggle is on;
+  - `bulbOf` gives off, new (with a count), or seen, and the card a click opens.
+- **Bulb:** in the clock row. It is quiet: one soft pulse when new, no sound, no modal, and the pulse is off under reduced motion.
+- **Panel:** one insight inline, so play continues. It shows:
+  - the kind, plus an Experimental badge when flagged;
+  - the clock, the team, and the score **when it fired**;
+  - the sentence;
+  - Earlier/Later through the cards surfaced so far;
+  - "Data: StatsBomb" inside the panel.
+
+  Opening a card marks it read. Scrubbing back hides later cards again but keeps them read.
+- **"Why this insight?":** an SVG pitch in the acting team's attacking frame with the final-third line, plus channel lines on side-shift cards. Entries are arrows and shots are dots. The evidence table sits below it, then the sources.
+- **Experimental toggle:** "Show experimental insights" is off by default and kept in `localStorage` (guarded). Turning it off closes an open burst card.
+- **Tests:** 7 new Vitest tests (22 in total):
+  - the bulb is off before each card's clock and new at it;
+  - the toggle hides the burst;
+  - seen and new transitions, and scrubbing back;
+  - each card keeps its own score.
+- **Checked in the browser on match 3773497:**
+  - off at 24:13, and 1 new insight at 24:14;
+  - the Barcelona side-shift card at 1–0 has 11 arrows and both channel lines;
+  - with the toggle off, the 34:36 burst does not light the bulb;
+  - with the toggle on it lights at exactly 34:36, carries the Experimental badge at 2–0, and has 4 shot dots and 4 entry arrows;
+  - at full time, 2 new insights, and stepping walks all 4 in order;
+  - no page overflow at 375 px, and the bulb sits below the team names (measured).
+- **Layout fixes made during the check:** the bulb collided with the away name at 375 px, and the evidence table wrapped. The bulb moved into the clock row, and the table now scrolls inside its box.
+- **Known limit:** the browser pane cropped phone-size screenshots, so the phone check rests on DOM measurements.

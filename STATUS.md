@@ -12,8 +12,8 @@ A short snapshot of where the project stands. [ROADMAP.md](ROADMAP.md) holds the
   | M1: score in the domain | done |
   | M2: card assembly and export contract | done |
   | M3: viewer skeleton | done |
-  | M4: light bulb, insight panel, evidence | next |
-  | M5: post-match history, end-to-end check | — |
+  | M4: light bulb, insight panel, evidence | done |
+  | M5: post-match history, end-to-end check | next |
 - **Research track:** Phase 2 first card judgments are in; probe 03 and the gate decision are pending. Phases 3–6 continue only as research; nothing enters the product until promoted.
 
 ## Card stream (`uv run regista replay --match <id>`)
@@ -49,5 +49,5 @@ Product direction recorded: prefer scoreline-against-chance-quality and historic
 
 ## Health
 - 334 Python tests pass; Ruff lint and format pass; strict Pyright reports 0 errors.
-- Viewer: 15 Vitest tests pass; Biome and strict TypeScript are clean.
+- Viewer: 22 Vitest tests pass; Biome and strict TypeScript are clean.
 - The development warehouse has 800 matches; no held-out match has been opened.
