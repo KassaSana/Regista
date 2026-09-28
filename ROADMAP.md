@@ -165,6 +165,7 @@ Gate: the model measurably improves card precision, or the explorer answers ques
 Gate: every context card can answer "how do you know?" instantly.
 
 ## Phase 6 — Positional and tactical layer
+- Event-data baseline (2026-09-28): development-only recovery-location and completed-movement directness definitions covered all 1,600 team-matches. They are retrospective ball-action descriptors, not defensive-line estimates or tactical cards. See [research note 11](docs/research/11-event-data-recovery-and-directness.md).
 - SkillCorner open tracking sample and StatsBomb 360 frames for positional experiments. `kloppy` may load them, but only inside an adapter, never in domain code.
 - Event-data comparisons with precise definitions: recovery location, directness.
 - Defensive line height only from positional data; ball-action locations do not establish where the defensive unit stands.
