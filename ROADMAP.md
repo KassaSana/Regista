@@ -101,6 +101,7 @@ Research, on development data only (each piece of research is written up as a re
 7. Explore the development data. First note (2026-09-27): [research note 05](docs/research/05-territory-and-threat.md), territory versus threat in 10-minute windows. Retrospective; no detector change.
    Follow-up (2026-09-28): [research note 06](docs/research/06-territory-earlier-match.md) compares each spell with earlier play and score state. The association remains modest; no detector change or fan-value claim.
    Automated side-shift audit (2026-09-28): [research note 12](docs/research/12-side-shift-automated-audit.md) replays all 800 acquired development matches, checks card evidence and frequency, and identifies wording and timing cases for further study. No detector change or fan-value claim.
+   Independent raw-record follow-up (2026-09-28): [research note 13](docs/research/13-side-shift-flagged-cards.md) verifies all 1,591 emitted cards' supporting event sets and channel counts; the flagged directions and other-team trigger mechanisms are real behavior rather than count mismatches. Wording and timing variants remain to be tested on development only.
 8. Turn fan questions into candidate signals:
    - What changed in the last 10–15 minutes?
    - Who has taken control even though the score has not changed?

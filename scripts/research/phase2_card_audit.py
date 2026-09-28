@@ -26,7 +26,7 @@ MANIFEST = RAW / "manifest.jsonl"
 SPLIT = ROOT / "splits/v1.json"
 
 
-def _development_ids() -> set[int]:
+def development_ids() -> set[int]:
     payload: object = json.loads(SPLIT.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError("split file has no assignments")
@@ -44,7 +44,7 @@ def _development_ids() -> set[int]:
     return identifiers
 
 
-def _event_files(development_ids: set[int]) -> dict[int, Path]:
+def development_event_files(development_ids: set[int]) -> dict[int, Path]:
     source_commit = load_corpus(ROOT / "catalog/corpus.toml").source_commit
     files: dict[int, Path] = {}
     for line in MANIFEST.read_text(encoding="utf-8").splitlines():
@@ -81,7 +81,7 @@ def _check_evidence(
 
 
 def audit() -> dict[str, object]:
-    files = _event_files(_development_ids())
+    files = development_event_files(development_ids())
     cards_by_match: Counter[int] = Counter()
     cards_by_channel: Counter[str] = Counter()
     unusual: Counter[str] = Counter()
