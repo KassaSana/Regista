@@ -17,6 +17,7 @@ ALLOWED_REGISTA_IMPORTS = {
     "templates.py": ("regista.domain",),
     "warehouse": ("regista.domain", "regista.warehouse", "duckdb"),
     "storage": ("regista.pipeline", "regista.storage", "boto3", "botocore", "mypy_boto3_s3"),
+    "valuation": ("regista.domain", "regista.valuation", "numpy"),
 }
 
 

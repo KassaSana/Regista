@@ -1,6 +1,6 @@
 # Regista Technology Stack
 
-Last updated: 2026-09-27
+Last updated: 2026-09-28
 
 This is the record of which languages, tools, and approaches Regista uses, when each one arrives, and why. Changing a choice here is a recorded decision (see [AGENTS.md](../AGENTS.md)).
 
@@ -35,7 +35,7 @@ This is the record of which languages, tools, and approaches Regista uses, when 
 | Browser checks | Playwright | Phase 2 | Screenshots and one end-to-end test |
 | Static figures for write-ups | mplsoccer + matplotlib | Phase 2 | Pitch maps carrying the StatsBomb logo |
 | Continuous integration | GitHub Actions (`.github/workflows/ci.yml`): Python 3.13 from `.python-version`, `uv sync --locked`, Ruff lint and format check, strict Pyright, pytest. Contract tests skip because provider data is never in the repository; no secrets, corpus download, or deployment. The viewer build and tests join when the viewer exists. | Phase 2 (2026-09-27, with the private GitHub backup) | Every push is checked on a clean machine with synthetic data only |
-| Modeling | NumPy for our own expected-threat implementation; scikit-learn `HistGradientBoostingClassifier` for possession value. `socceraction` only in a throwaway Python 3.12 environment for cross-checks. | Phase 4 | Learning first; no Python downgrade |
+| Modeling | NumPy 2.5.3 for our own expected-threat implementation (added 2026-09-28); scikit-learn `HistGradientBoostingClassifier` for a later possession-value experiment. `socceraction` only in a throwaway Python 3.12 environment for cross-checks. | Phase 4 | Learning first; no Python downgrade |
 | Context store | A `source_claims` table in DuckDB; Wikidata through SPARQL over `urllib` | Phase 5 | Same engine as exploration |
 | Tracking and 360 data | kloppy, inside an adapter only | Phase 6 | Standard loaders for SkillCorner and StatsBomb 360 |
 

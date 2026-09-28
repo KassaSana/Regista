@@ -145,6 +145,7 @@ Gate: is a replayed match worth watching with Regista? If not, fix detection bef
 Gate: the cards are correct against the event data and are not redundant with Phase 2 cards.
 
 ## Phase 4 — Action value
+- Provisional research foundation (2026-09-28): a provider-neutral action-value contract, geometric movement baseline, development-only expected-threat trainer, and synthetic equation cross-check are in progress. The full-development fitted grid is a retrospective research artifact. It must not be used to make leakage-free replay claims for the matches it was trained on; a chronological training and evaluation boundary is still needed. See [research note 08](docs/research/08-expected-threat-foundation.md).
 - Heuristic valuer first (the idea from the original rating plan), then a learned possession-value model, both behind the same interface.
 - Implement expected threat ourselves as the learning piece. `socceraction` does not install on Python 3.13, so cross-check against it in a throwaway environment (`uv run --python 3.12 --with socceraction ...`). Do not downgrade the project's Python.
 - Uses: a "most dangerous spell so far" trigger, and a player explorer showing what drove a performance.
