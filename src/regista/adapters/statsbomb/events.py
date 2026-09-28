@@ -14,9 +14,18 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import cast
 
-from regista.domain.events import ActionType, BallMovement, Event, MatchClock, Team
+from regista.domain.events import (
+    ActionType,
+    BallMovement,
+    Event,
+    FormationDetail,
+    MatchClock,
+    NamedPlayer,
+    SubstitutionDetail,
+    Team,
+)
 from regista.domain.geometry import Point
-from regista.domain.ids import EventId, MatchId, TeamId
+from regista.domain.ids import EventId, MatchId, PlayerId, TeamId
 
 # Pass types (``pass.type.name``) that restart play. Regular passes have no type.
 SET_PIECE_PASS_TYPES = frozenset({"Corner", "Free Kick", "Throw-in", "Goal Kick", "Kick Off"})
@@ -124,7 +133,45 @@ def normalize_event(record: Mapping[str, object], match_id: MatchId) -> Event:
         movement=_ball_movement(record, identifier, action, location),
         source=SOURCE,
         provider_record=MappingProxyType(dict(record)),
+        match_fact=_match_fact(record, action, type_name),
     )
+
+
+def _named_player(value: object, description: str) -> NamedPlayer:
+    player = _as_mapping(value, description)
+    return NamedPlayer(PlayerId(_integer_field(player, "id")), _string_field(player, "name"))
+
+
+def _match_fact(
+    record: Mapping[str, object], action: ActionType, type_name: str
+) -> FormationDetail | SubstitutionDetail | None:
+    if action is ActionType.SUBSTITUTION:
+        details = _as_mapping(record.get("substitution"), "substitution")
+        return SubstitutionDetail(
+            departing=_named_player(record.get("player"), "substitution player"),
+            entering=_named_player(details.get("replacement"), "substitution replacement"),
+        )
+    if action is ActionType.FORMATION_CHANGE:
+        tactics = _as_mapping(record.get("tactics"), "tactics")
+        formation = tactics.get("formation")
+        if isinstance(formation, bool) or not isinstance(formation, int | str):
+            raise StatsBombFormatError(f"formation must be a number, got {formation!r}")
+        players: tuple[NamedPlayer, ...] = ()
+        if type_name == "Starting XI":
+            lineup = tactics.get("lineup")
+            if not isinstance(lineup, list):
+                raise StatsBombFormatError("starting lineup must contain eleven players")
+            lineup_items = cast(list[object], lineup)
+            if len(lineup_items) != 11:
+                raise StatsBombFormatError("starting lineup must contain eleven players")
+            players = tuple(
+                _named_player(_as_mapping(item, "starting lineup entry").get("player"), "player")
+                for item in lineup_items
+            )
+            if len({player.identifier for player in players}) != 11:
+                raise StatsBombFormatError("starting lineup repeats a player")
+        return FormationDetail(str(formation), type_name == "Starting XI", players)
+    return None
 
 
 def _ball_movement(

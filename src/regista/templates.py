@@ -13,6 +13,43 @@ from math import floor
 from regista.domain.entries import Channel, channel_of
 from regista.domain.events import Event, MatchClock
 from regista.domain.insights import AttackingSideShift
+from regista.domain.match_facts import (
+    FormationChangeFact,
+    MatchFact,
+    StartingLineupFact,
+    SubstitutionFact,
+)
+
+
+def _formation(digits: str) -> str:
+    return "-".join(digits) if digits.isdigit() else digits
+
+
+def render_match_fact(fact: MatchFact) -> str:
+    """State a recorded match fact without implying cause or medical condition."""
+    if isinstance(fact, StartingLineupFact):
+        return f"{fact.team.name} started in a recorded {_formation(fact.formation)} shape."
+    if isinstance(fact, SubstitutionFact):
+        return f"{fact.entering.name} replaced {fact.departing.name} for {fact.team.name}."
+    return (
+        f"The recorded formation for {fact.team.name} changed from "
+        f"{_formation(fact.previous_formation)} to {_formation(fact.formation)}."
+    )
+
+
+def render_match_fact_evidence(fact: MatchFact) -> list[str]:
+    """List the exact event records and lineup names behind a fact."""
+    if isinstance(fact, StartingLineupFact):
+        return [
+            f"  recorded event: {fact.evidence_event_id} ({fact.source})",
+            "  starting players: " + ", ".join(player.name for player in fact.players),
+        ]
+    if isinstance(fact, FormationChangeFact):
+        return [
+            f"  previous formation event: {fact.previous_event_id} ({fact.previous_source})",
+            f"  new formation event: {fact.evidence_event_id} ({fact.source})",
+        ]
+    return [f"  recorded event: {fact.evidence_event_id} ({fact.source})"]
 
 
 def render_attacking_side_shift(card: AttackingSideShift) -> str:

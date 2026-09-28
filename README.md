@@ -38,6 +38,13 @@ uv run pyright
 supporting event identifiers. Add `--evidence` to see each card's channel
 table and every supporting entry with its coordinates instead.
 
+For the provisional Phase 3 recorded-fact stream, run
+`uv run regista replay --match 3773497 --facts`. It shows starting shapes,
+substitutions, and changed recorded formations separately from the default
+side-shift cards. Add `--evidence` to see the starting players and source
+event identifiers. Fan usefulness and combined-stream attention cost are
+still under review.
+
 Provider data belongs under `data/` and is intentionally excluded from version
 control.
 

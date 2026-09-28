@@ -137,6 +137,8 @@ Also in this phase:
 Gate: is a replayed match worth watching with Regista? If not, fix detection before anything else.
 
 ## Phase 3 — Match facts already in the event data
+- Development-only inventory (2026-09-28): [research note 07](docs/research/07-recorded-match-facts.md) found 1,600 starting lineups, 5,384 substitutions, and 743 recorded formation changes across 800 matches. A separate factual replay stream is justified provisionally; fan value and combined-stream redundancy remain unjudged.
+- Provisional implementation (2026-09-28): [recorded-fact specification](docs/specs/phase-3-recorded-match-facts.md) and [increment 13](docs/increments/13-recorded-match-facts.md) add `replay --facts`. All 800 development event files replayed with the expected fact counts. The default Phase 2 card feed is unchanged.
 - Cards from recorded formation changes (Tactical Shift), substitutions, and starting lineups.
 - Pair them with observed trend changes only as separate, evidenced observations; never claim one caused the other.
 

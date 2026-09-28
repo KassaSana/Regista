@@ -120,6 +120,57 @@ def test_replay_with_evidence_prints_the_channel_table_instead_of_identifiers(
     assert lines[-1] == "Data: StatsBomb"
 
 
+def test_provisional_facts_mode_reports_recorded_changes_and_evidence(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    players = [{"player": {"id": number, "name": f"Player {number}"}} for number in range(1, 12)]
+    records = [
+        statsbomb_record(
+            1,
+            0,
+            0,
+            type={"id": 0, "name": "Starting XI"},
+            tactics={"formation": 433, "lineup": players},
+        ),
+        statsbomb_record(
+            2,
+            20,
+            0,
+            type={"id": 0, "name": "Tactical Shift"},
+            tactics={"formation": 433},
+        ),
+        statsbomb_record(
+            3,
+            30,
+            0,
+            type={"id": 0, "name": "Substitution"},
+            player={"id": 1, "name": "Player 1"},
+            substitution={"replacement": {"id": 12, "name": "Replacement"}},
+        ),
+        statsbomb_record(
+            4,
+            31,
+            0,
+            type={"id": 0, "name": "Tactical Shift"},
+            tactics={"formation": 442},
+        ),
+    ]
+    write_match(tmp_path, records)
+
+    assert (
+        main(["replay", "--match", "1", "--events-dir", str(tmp_path), "--facts", "--evidence"])
+        == 0
+    )
+    output = capsys.readouterr().out
+    assert output.count("[period 1,") == 3
+    assert "Home started in a recorded 4-3-3 shape." in output
+    assert "Replacement replaced Player 1 for Home." in output
+    assert "changed from 4-3-3 to 4-4-2." in output
+    assert "starting players: Player 1" in output
+    assert "previous formation event: synthetic-2" in output
+    assert output.endswith("Data: StatsBomb\n")
+
+
 def test_replay_of_a_missing_match_exits_with_a_usage_error(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

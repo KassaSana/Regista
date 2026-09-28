@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 from regista.domain.geometry import Point
-from regista.domain.ids import EventId, MatchId, TeamId
+from regista.domain.ids import EventId, MatchId, PlayerId, TeamId
 
 
 class ActionType(Enum):
@@ -99,6 +99,31 @@ class BallMovement:
 
 
 @dataclass(frozen=True, slots=True)
+class NamedPlayer:
+    """A player named by an event at the time it was recorded."""
+
+    identifier: PlayerId
+    name: str
+
+
+@dataclass(frozen=True, slots=True)
+class FormationDetail:
+    """A recorded starting shape or in-match tactical-shift shape."""
+
+    formation: str
+    starting: bool
+    starting_players: tuple[NamedPlayer, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class SubstitutionDetail:
+    """The two players named in a recorded substitution."""
+
+    departing: NamedPlayer
+    entering: NamedPlayer
+
+
+@dataclass(frozen=True, slots=True)
 class Event:
     """One provider event translated into Regista's own terms.
 
@@ -117,6 +142,7 @@ class Event:
     movement: BallMovement | None
     source: str
     provider_record: Mapping[str, object] = field(compare=False, repr=False)
+    match_fact: FormationDetail | SubstitutionDetail | None = None
 
     def __post_init__(self) -> None:
         moves_ball = self.action in BALL_MOVING_ACTIONS
@@ -126,3 +152,13 @@ class Event:
         if not moves_ball and self.movement is not None:
             message = f"{self.action.value} event {self.identifier} cannot have a ball movement"
             raise ValueError(message)
+        if (
+            isinstance(self.match_fact, FormationDetail)
+            and self.action is not ActionType.FORMATION_CHANGE
+        ):
+            raise ValueError("formation detail needs a formation-change event")
+        if (
+            isinstance(self.match_fact, SubstitutionDetail)
+            and self.action is not ActionType.SUBSTITUTION
+        ):
+            raise ValueError("substitution detail needs a substitution event")

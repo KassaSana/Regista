@@ -158,7 +158,17 @@ def standard_match(match_id: int = 100, filler: int = FILLER_EVENTS) -> Syntheti
     """The reference match. Score 1-1: a home shot goal and an away own-goal credit."""
     match = SyntheticMatch(match_id=match_id, filler=filler)
     for team, formation in ((HOME, 442), (AWAY, 433)):
-        match.add(1, 0.0, "Starting XI", team, tactics={"formation": formation, "lineup": []})
+        identifiers = range(1, 12) if team == HOME else range(20, 31)
+        match.add(
+            1,
+            0.0,
+            "Starting XI",
+            team,
+            tactics={
+                "formation": formation,
+                "lineup": [{"player": _player(identifier)} for identifier in identifiers],
+            },
+        )
         match.add(1, 0.0, "Half Start", team)
         match.add(2, 0.0, "Half Start", team)
     # Period 1, bin 0.

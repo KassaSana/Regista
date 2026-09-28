@@ -11,20 +11,19 @@ from collections.abc import Iterable, Iterator
 from typing import Protocol
 
 from regista.domain.events import Event
-from regista.domain.insights import AttackingSideShift
 
 
-class Detector(Protocol):
+class Detector[Insight](Protocol):
     """An incremental detector: observes one event, returns any insights it produces."""
 
-    def observe(self, event: Event) -> list[AttackingSideShift]: ...
+    def observe(self, event: Event) -> list[Insight]: ...
 
 
 class ReplayOrderError(ValueError):
     """Raised when events do not arrive in strictly increasing provider sequence."""
 
 
-def replay(events: Iterable[Event], detector: Detector) -> Iterator[AttackingSideShift]:
+def replay[Insight](events: Iterable[Event], detector: Detector[Insight]) -> Iterator[Insight]:
     """Feed events to a detector in order and yield insights as soon as they fire."""
     previous: Event | None = None
     for event in events:

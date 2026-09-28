@@ -18,6 +18,7 @@ from regista.adapters.statsbomb.events import load_events
 from regista.adapters.statsbomb.matches import load_match_records
 from regista.adapters.statsbomb.normalize import ADAPTER_VERSION, normalize_match
 from regista.detectors.attacking_side_shift import AttackingSideShiftDetector, SideShiftSettings
+from regista.detectors.recorded_match_facts import RecordedMatchFactsDetector
 from regista.domain.catalog import CorpusConfiguration, IndexCatalog
 from regista.domain.ids import MatchId
 from regista.domain.replay import replay
@@ -38,7 +39,13 @@ from regista.pipeline.remote import (
 )
 from regista.pipeline.splits import assign_splits, freeze_splits
 from regista.storage.r2 import R2Store
-from regista.templates import render_attacking_side_shift, render_clock, render_evidence
+from regista.templates import (
+    render_attacking_side_shift,
+    render_clock,
+    render_evidence,
+    render_match_fact,
+    render_match_fact_evidence,
+)
 from regista.warehouse.builder import IngestRun, WarehouseBuilder
 from regista.warehouse.research import fingerprint, quality_report, snapshot_facts
 
@@ -85,6 +92,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--evidence",
         action="store_true",
         help="print each card's channel table and supporting entries instead of identifiers",
+    )
+    replay_command.add_argument(
+        "--facts",
+        action="store_true",
+        help="show provisional starting-lineup, substitution, and formation facts",
     )
     data_command = commands.add_parser("data", help="catalog metadata and freeze research splits")
     data_commands = data_command.add_subparsers(dest="data_command", required=True)
@@ -665,6 +677,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error(f"no event file for match {match_id} at {events_path}")
 
     events = load_events(events_path, match_id)
+    if arguments.facts:
+        for fact in replay(events, RecordedMatchFactsDetector()):
+            print(f"[{render_clock(fact.fired_at)}] {render_match_fact(fact)}")
+            if arguments.evidence:
+                print("\n".join(render_match_fact_evidence(fact)))
+            else:
+                print(f"  recorded event: {fact.evidence_event_id}")
+        print(ATTRIBUTION)
+        return 0
     cards = list(replay(events, AttackingSideShiftDetector(SideShiftSettings())))
     if not cards:
         print("No cards.")

@@ -42,6 +42,17 @@ def test_every_known_provider_type_maps_to_a_regista_type(type_name: str) -> Non
         "type": {"id": 0, "name": type_name},
         "team": HOME,
     }
+    if type_name in ("Starting XI", "Tactical Shift"):
+        record["tactics"] = {
+            "formation": 433,
+            "lineup": [
+                {"player": {"id": identifier, "name": f"Player {identifier}"}}
+                for identifier in range(1, 12)
+            ],
+        }
+    elif type_name == "Substitution":
+        record["player"] = {"id": 1, "name": "Player One"}
+        record["substitution"] = {"replacement": {"id": 12, "name": "Player Twelve"}}
 
     assert normalize_event(record, MatchId(1)).action is ACTIONS_BY_TYPE_NAME[type_name]
 
