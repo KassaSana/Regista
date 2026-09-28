@@ -15,9 +15,12 @@ from typing import cast
 from phase2_card_audit import development_event_files, development_ids
 
 from regista.adapters.statsbomb.events import load_events
-from regista.detectors.attacking_side_shift import AttackingSideShiftDetector
+from regista.detectors.attacking_side_shift import AttackingSideShiftDetector, SideShiftSettings
 from regista.domain.ids import MatchId
 from regista.domain.replay import replay
+
+# The note this script supports used the Phase 1 rule: evaluate teams at every event.
+PHASE_ONE_TIMING = SideShiftSettings(fire_on_own_entry=False)
 
 CHANNELS = ("left", "center", "right")
 SET_PIECES = frozenset({"Corner", "Free Kick", "Throw-in", "Goal Kick", "Kick Off"})
@@ -143,7 +146,7 @@ def audit() -> dict[str, object]:
         previous_card_clock: dict[int, tuple[int, int]] = {}
         normalized = load_events(path, MatchId(match_id))
 
-        for card in replay(normalized, AttackingSideShiftDetector()):
+        for card in replay(normalized, AttackingSideShiftDetector(PHASE_ONE_TIMING)):
             totals["cards"] += 1
             trigger = raw_by_id[str(card.trigger_event_id)]
             trigger_sequence = _integer(trigger["index"])

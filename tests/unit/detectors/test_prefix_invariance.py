@@ -10,11 +10,12 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 from synthetic_events import AWAY, HOME, EventStream
 
+from regista.detectors.attacking_burst import AttackingBurstDetector, BurstSettings
 from regista.detectors.attacking_side_shift import AttackingSideShiftDetector, SideShiftSettings
 from regista.domain.entries import Channel
 from regista.domain.events import ActionType, BallMovement, Event, Team
 from regista.domain.geometry import Point
-from regista.domain.insights import AttackingSideShift
+from regista.domain.insights import AttackingBurst, AttackingSideShift
 from regista.domain.replay import replay
 
 # Low thresholds so random streams actually produce cards.
@@ -97,3 +98,64 @@ def test_cards_before_a_cut_ignore_every_later_event(data: st.DataObject) -> Non
 
     assert cards_up_to(altered, cut) == original
     assert list(replay(events[:cut], AttackingSideShiftDetector(EAGER))) == original
+
+
+# Burst streams: shots and entries for both teams across two periods.
+EAGER_BURST = BurstSettings(
+    window_seconds=300,
+    minimum_recent_shots=2,
+    minimum_rate_ratio=Fraction(3, 2),
+    minimum_earlier_seconds=120,
+    cooldown_seconds=180,
+)
+burst_specifications = st.tuples(
+    st.sampled_from([1, 2]),
+    st.integers(0, PERIOD_LENGTH_SECONDS - 1),
+    st.sampled_from([HOME, AWAY]),
+    st.sampled_from(["shot", "penalty", "entry", "other"]),
+)
+
+
+def build_burst_stream(specifications: list[tuple[int, int, Team, str]]) -> list[Event]:
+    stream = EventStream()
+    ordered = sorted(specifications, key=lambda item: (item[0], item[1]))
+    for period in (1, 2):
+        stream.other(HOME, period, *divmod(PERIOD_STARTS[period], 60))
+        for spec_period, offset, team, kind in ordered:
+            if spec_period != period:
+                continue
+            minute, second = divmod(PERIOD_STARTS[period] + offset, 60)
+            if kind == "entry":
+                stream.entry(team, period, minute, second, Channel.CENTER)
+            elif kind == "other":
+                stream.other(team, period, minute, second)
+            else:
+                stream.shot(team, period, minute, second, penalty=kind == "penalty")
+    return stream.events
+
+
+def burst_cards_up_to(events: list[Event], cut: int) -> list[AttackingBurst]:
+    early_identifiers = {event.identifier for event in events[:cut]}
+    return [
+        card
+        for card in replay(events, AttackingBurstDetector(EAGER_BURST))
+        if card.trigger_event_id in early_identifiers
+    ]
+
+
+@settings(max_examples=200, deadline=None)
+@given(data=st.data())
+def test_burst_cards_before_a_cut_ignore_every_later_event(data: st.DataObject) -> None:
+    events = build_burst_stream(
+        data.draw(st.lists(burst_specifications, min_size=40, max_size=160))
+    )
+    cut = data.draw(st.integers(0, len(events)))
+    altered = events[:cut] + [
+        replace(event, team=data.draw(st.sampled_from([HOME, AWAY]))) for event in events[cut:]
+    ]
+
+    original = burst_cards_up_to(events, cut)
+    note_event(f"burst cards before the cut: {'some' if original else 'none'}")
+
+    assert burst_cards_up_to(altered, cut) == original
+    assert list(replay(events[:cut], AttackingBurstDetector(EAGER_BURST))) == original

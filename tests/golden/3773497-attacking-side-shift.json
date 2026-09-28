@@ -6,32 +6,33 @@
     "minimum_recent_entries": 8,
     "minimum_baseline_entries": 12,
     "minimum_share_increase": "1/4",
-    "cooldown_seconds": 600
+    "cooldown_seconds": 600,
+    "fire_on_own_entry": true,
+    "maximum_seconds_since_own_entry": null
   },
   "cards": [
     {
       "period": 1,
-      "minute": 23,
-      "second": 11,
+      "minute": 24,
+      "second": 14,
       "team": "Barcelona",
       "channel": "center",
-      "sentence": "Barcelona's final-third entries have shifted to the center: 6 of the last 11 (55%), up from 3 of 13 (23%) earlier.",
+      "sentence": "More of Barcelona's final-third entries are ending in the center: 7 of the last 11 (64%), up from 3 of 14 (21%) earlier.",
       "recent": {
         "left": 3,
-        "center": 6,
-        "right": 2
+        "center": 7,
+        "right": 1
       },
       "baseline": {
         "left": 2,
         "center": 3,
-        "right": 8
+        "right": 9
       },
       "channels_losing_share": [
         "right"
       ],
-      "trigger_event_id": "5f90c301-9ac3-4e82-b95f-8641ebfb3b25",
+      "trigger_event_id": "f2a46924-70cd-48a0-9303-6d4aa2e0f1be",
       "recent_entry_ids": [
-        "27894723-1df7-4084-ba0f-8e846f481f23",
         "2ce47f80-9641-47f5-93cd-dd262e1ca890",
         "09f28a9f-7cb3-4beb-b564-3a1dd0767471",
         "5c5ca4d2-85b7-4e8a-95a1-da5bfa321b36",
@@ -41,7 +42,8 @@
         "3d5f3d2c-24f1-44f8-a61a-8d2483b12e59",
         "0ca8591c-1be8-4813-927c-6e8a984701b0",
         "75267f5b-1249-459d-a836-874d409069dc",
-        "fbfe668c-9029-4c51-90d4-869795e4fe27"
+        "fbfe668c-9029-4c51-90d4-869795e4fe27",
+        "f2a46924-70cd-48a0-9303-6d4aa2e0f1be"
       ],
       "baseline_entry_ids": [
         "fb0b3af2-3419-4eb8-a7f9-249e1bce7c63",
@@ -56,7 +58,8 @@
         "db39a9be-cd26-4685-bd35-6ff9b68664b7",
         "e448c8f6-aa9a-489e-aaaf-e7e3728f91e9",
         "ab73c0cc-29bd-4487-bafc-73eb01bc0854",
-        "117d093f-c243-4c2c-b28a-63bc80625268"
+        "117d093f-c243-4c2c-b28a-63bc80625268",
+        "27894723-1df7-4084-ba0f-8e846f481f23"
       ],
       "sources": [
         "StatsBomb Open Data"
@@ -64,13 +67,13 @@
     },
     {
       "period": 2,
-      "minute": 55,
-      "second": 3,
+      "minute": 56,
+      "second": 2,
       "team": "Barcelona",
       "channel": "left",
-      "sentence": "Barcelona's final-third entries have shifted to the left: 10 of the last 14 (71%), up from 13 of 54 (24%) earlier.",
+      "sentence": "More of Barcelona's final-third entries are ending on the left: 11 of the last 15 (73%), up from 13 of 54 (24%) earlier.",
       "recent": {
-        "left": 10,
+        "left": 11,
         "center": 2,
         "right": 2
       },
@@ -83,7 +86,7 @@
         "center",
         "right"
       ],
-      "trigger_event_id": "3dae685d-d638-4693-a2b2-35f262d47347",
+      "trigger_event_id": "6c04a3cd-79f0-4e8a-bcbb-480f94eef5f7",
       "recent_entry_ids": [
         "9b907e85-7ba3-4f48-a6b3-91014da86f9b",
         "f5c57945-00a9-43ce-b0c0-2f9d60901db4",
@@ -98,7 +101,8 @@
         "f691ac55-ea11-4f9f-bc82-ddacd398ee0a",
         "0034993c-7da5-402d-867e-8fcbb6480a47",
         "187128ce-099f-40b6-a133-73f473b7a784",
-        "16df8afc-4b2f-4230-bfab-b4188f6ea4c6"
+        "16df8afc-4b2f-4230-bfab-b4188f6ea4c6",
+        "6c04a3cd-79f0-4e8a-bcbb-480f94eef5f7"
       ],
       "baseline_entry_ids": [
         "fb0b3af2-3419-4eb8-a7f9-249e1bce7c63",

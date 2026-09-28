@@ -124,6 +124,17 @@ class SubstitutionDetail:
 
 
 @dataclass(frozen=True, slots=True)
+class ShotDetail:
+    """What Regista reads from a shot: whether it was a penalty kick.
+
+    Penalties are separate from open and set-piece play; shootout kicks are
+    penalties too.
+    """
+
+    penalty: bool
+
+
+@dataclass(frozen=True, slots=True)
 class Event:
     """One provider event translated into Regista's own terms.
 
@@ -143,6 +154,7 @@ class Event:
     source: str
     provider_record: Mapping[str, object] = field(compare=False, repr=False)
     match_fact: FormationDetail | SubstitutionDetail | None = None
+    shot: ShotDetail | None = None
 
     def __post_init__(self) -> None:
         moves_ball = self.action in BALL_MOVING_ACTIONS
@@ -162,3 +174,6 @@ class Event:
             and self.action is not ActionType.SUBSTITUTION
         ):
             raise ValueError("substitution detail needs a substitution event")
+        if (self.shot is not None) != (self.action is ActionType.SHOT):
+            message = f"{self.action.value} event {self.identifier}: shot detail belongs on shots"
+            raise ValueError(message)

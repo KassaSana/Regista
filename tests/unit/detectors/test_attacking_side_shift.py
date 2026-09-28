@@ -9,6 +9,7 @@ first moment both minimums can hold.
 from fractions import Fraction
 
 from synthetic_events import (
+    AWAY,
     HOME,
     SOURCE,
     EventStream,
@@ -17,9 +18,9 @@ from synthetic_events import (
     add_recent,
 )
 
-from regista.detectors.attacking_side_shift import AttackingSideShiftDetector
+from regista.detectors.attacking_side_shift import AttackingSideShiftDetector, SideShiftSettings
 from regista.domain.entries import Channel
-from regista.domain.events import MatchClock
+from regista.domain.events import Event, MatchClock
 from regista.domain.insights import AttackingSideShift, ChannelCounts
 from regista.domain.replay import replay
 
@@ -103,9 +104,9 @@ def test_nothing_fires_in_the_first_ten_minutes_of_a_period() -> None:
     stream.other(HOME, 1, 47)
     stream.other(HOME, 2, 45)  # the period starts at 45:00 (a Half Start event)
     add_recent(stream, [LEFT] * 8, period=2, first_minute=46)
-    stream.other(HOME, 2, 54, 59)
+    stream.entry(HOME, 2, 54, 59, LEFT)
     before_ten_minutes = run(stream)
-    stream.other(HOME, 2, 55)
+    stream.entry(HOME, 2, 55, 0, LEFT)
 
     cards = run(stream)
 
@@ -135,7 +136,7 @@ def test_the_cooldown_does_not_carry_into_the_next_period() -> None:
     stream.other(HOME, 1, 47)
     stream.other(HOME, 2, 45)  # the period starts at 45:00 (a Half Start event)
     add_recent(stream, [LEFT] * 8, period=2, first_minute=46)
-    stream.other(HOME, 2, 55)  # before 56:00, when a carried-over cooldown would end
+    stream.entry(HOME, 2, 55, 0, LEFT)  # before 56:00, when a carried-over cooldown would end
 
     cards = run(stream)
 
@@ -186,3 +187,47 @@ def test_incomplete_passes_do_not_count_as_entries() -> None:
         stream.entry(HOME, 1, minute, 0, LEFT, completed=False)
 
     assert run(stream) == []
+
+
+def _shift_completed_by_an_old_entry_leaving() -> tuple[EventStream, Event]:
+    """A left shift that qualifies only once 9:00-9:30 entries leave the window.
+
+    At Home's 18:00 entry the left share is 6 of 11 (too small). After 19:00 the
+    window loses the older entries, so Away's event at 20:00 is the first moment
+    the shift qualifies; Home's next entry is at 21:00.
+    """
+    stream = EventStream()
+    add_baseline(stream, [LEFT, CENTER, RIGHT] * 4)
+    stream.entry(HOME, 1, 9, 0, CENTER)
+    stream.entry(HOME, 1, 9, 15, RIGHT)
+    stream.entry(HOME, 1, 9, 30, CENTER)
+    add_recent(stream, [LEFT] * 6 + [CENTER, RIGHT], first_minute=11)
+    stream.other(AWAY, 1, 20)
+    return stream, stream.entry(HOME, 1, 21, 0, LEFT)
+
+
+def _fired(stream: EventStream, settings: SideShiftSettings) -> list[MatchClock]:
+    return [card.fired_at for card in replay(stream.events, AttackingSideShiftDetector(settings))]
+
+
+def test_a_shift_waits_for_the_teams_own_next_entry() -> None:
+    stream, last = _shift_completed_by_an_old_entry_leaving()
+
+    cards = run(stream)
+
+    assert [(card.fired_at, card.trigger_event_id) for card in cards] == [
+        (MatchClock(1, 21, 0), last.identifier)
+    ]
+    anytime = SideShiftSettings(fire_on_own_entry=False)
+    assert _fired(stream, anytime) == [MatchClock(1, 20, 0)]
+
+
+def test_the_recency_variant_needs_an_own_entry_within_its_limit() -> None:
+    stream, _ = _shift_completed_by_an_old_entry_leaving()
+
+    # Away's 20:00 event comes 120 seconds after Home's last entry.
+    within_30 = SideShiftSettings(fire_on_own_entry=False, maximum_seconds_since_own_entry=30)
+    within_180 = SideShiftSettings(fire_on_own_entry=False, maximum_seconds_since_own_entry=180)
+
+    assert _fired(stream, within_30) == [MatchClock(1, 21, 0)]
+    assert _fired(stream, within_180) == [MatchClock(1, 20, 0)]

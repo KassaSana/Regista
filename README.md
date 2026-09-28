@@ -8,15 +8,14 @@ and shows the evidence behind it.
 
 Phase 1 is done: a StatsBomb adapter, a replay engine, and the attacking-side
 shift detector turn a replayed match into cards with their supporting event
-identifiers. Phase 2 now has a pinned catalog of 1,894 matches and frozen
-development/validation/test splits. 800 of the 1,340 development matches are
-downloaded, validated, and normalized into a local DuckDB development warehouse
-(no held-out match data). A private R2 backup holds the raw corpus and a warehouse snapshot, with a
-verified full restore (2026-09-27), and
-the owner's viewing-probe judgments are pending. See
-[ROADMAP.md](ROADMAP.md) for the phases and [AGENTS.md](AGENTS.md) for the
-working rules. Specifications:
-[Phase 1 detector](docs/specs/phase-1-attacking-side-shift.md) and
+identifiers. Phase 2 has a pinned catalog of 1,894 matches, frozen
+development/validation/test splits, 800 development matches in a local DuckDB
+warehouse (no held-out match data), a second card type (attacking burst), and a
+card-judging packet waiting on the owner's fan-value judgment. Current state:
+[STATUS.md](STATUS.md). Plan: [ROADMAP.md](ROADMAP.md). Working rules:
+[AGENTS.md](AGENTS.md). Specifications:
+[attacking side](docs/specs/phase-1-attacking-side-shift.md),
+[attacking burst](docs/specs/phase-2-attacking-burst.md), and the
 [Phase 2 data model](docs/specs/phase-2-data-model.md).
 
 ## Development
@@ -34,14 +33,15 @@ uv run pyright
 
 `regista replay` reads the pinned corpus under
 `data/raw/statsbomb-open-data/<source-commit>/data/events/<match>.json`
-(override with `--events-dir`) and prints each card with its time, sentence, and
-supporting event identifiers. Add `--evidence` to see each card's channel
-table and every supporting entry with its coordinates instead.
+(override with `--events-dir`) and prints the side-shift and attacking-burst
+cards in replay order, each with its time, sentence, and supporting event
+identifiers. Add `--evidence` to see each side-shift card's channel table and
+entries, and each burst card's shots, instead.
 
 For the provisional Phase 3 recorded-fact stream, run
 `uv run regista replay --match 3773497 --facts`. It shows starting shapes,
 substitutions, and changed recorded formations separately from the default
-side-shift cards. Add `--evidence` to see the starting players and source
+card stream. Add `--evidence` to see the starting players and source
 event identifiers. Fan usefulness and combined-stream attention cost are
 still under review.
 
@@ -159,7 +159,7 @@ load -> normalize -> replay -> detect -> render template -> card with evidence
 |---|---|
 | Load and normalize | `regista.adapters.statsbomb.events` (the only code that knows StatsBomb's format) |
 | Replay | `regista.domain.replay` |
-| Detect | `regista.detectors.attacking_side_shift` |
+| Detect | `regista.detectors.attacking_side_shift`, `regista.detectors.attacking_burst` |
 | Render | `regista.templates` |
 
 `regista.cli` is the composition root: the one module that chooses and wires

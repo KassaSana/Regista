@@ -35,6 +35,17 @@ def entry_record(index: int, minute: int, second: int, end_y: float) -> dict[str
     )
 
 
+def shot_record(index: int, minute: int) -> dict[str, object]:
+    return statsbomb_record(
+        index,
+        minute,
+        0,
+        type={"id": 16, "name": "Shot"},
+        location=[105.0, 40.0],
+        shot={"type": {"id": 87, "name": "Open Play"}},
+    )
+
+
 def write_match(directory: Path, records: list[dict[str, object]]) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     (directory / "1.json").write_text(json.dumps(records))
@@ -94,12 +105,32 @@ def test_replay_prints_each_card_with_its_evidence(
 
     lines = capsys.readouterr().out.splitlines()
     assert lines[0] == (
-        "[period 1, 18:00] Home's final-third entries have shifted to the left: "
+        "[period 1, 18:00] More of Home's final-third entries are ending on the left: "
         "8 of the last 8 (100%), up from 4 of 12 (33%) earlier."
     )
     assert lines[1] == "  recent entries: " + ", ".join(f"synthetic-{20 + i}" for i in range(8))
     assert lines[2].startswith("  baseline entries: synthetic-1, ")
     assert lines[-1] == "Data: StatsBomb"
+
+
+def test_replay_merges_burst_and_side_shift_cards_in_replay_order(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    channel_y = [10.0, 40.0, 70.0]
+    baseline = [entry_record(1 + i, *divmod(40 * i, 60), channel_y[i % 3]) for i in range(12)]
+    recent = [entry_record(20 + i, 11 + i, 0, 10.0) for i in range(8)]
+    shots = [shot_record(40 + i, minute) for i, minute in enumerate((21, 23, 25, 27))]
+    write_match(tmp_path, [statsbomb_record(0, 0, 0), *baseline, *recent, *shots])
+
+    main(["replay", "--match", "1", "--events-dir", str(tmp_path)])
+
+    cards = [line for line in capsys.readouterr().out.splitlines() if line.startswith("[")]
+    assert cards == [
+        "[period 1, 18:00] More of Home's final-third entries are ending on the left: "
+        "8 of the last 8 (100%), up from 4 of 12 (33%) earlier.",
+        "[period 1, 27:00] Home: 4 shots in the last 10 minutes, after none in the previous "
+        "17 minutes of play. Final-third entries in the last 10 minutes: 1.",
+    ]
 
 
 def test_replay_with_evidence_prints_the_channel_table_instead_of_identifiers(

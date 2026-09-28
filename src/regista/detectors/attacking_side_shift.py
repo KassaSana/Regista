@@ -25,6 +25,12 @@ class SideShiftSettings:
     minimum_baseline_entries: int = 12
     minimum_share_increase: Fraction = Fraction(1, 4)
     cooldown_seconds: int = 600
+    # Timing variants studied in research note 14. With ``fire_on_own_entry`` a
+    # team is evaluated only at its own final-third entries. With
+    # ``maximum_seconds_since_own_entry`` a team is evaluated only while its
+    # latest current-period entry is at most that many seconds old.
+    fire_on_own_entry: bool = True
+    maximum_seconds_since_own_entry: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,7 +59,8 @@ class AttackingSideShiftDetector:
         clock = event.clock
         self._period_start_seconds.setdefault(clock.period, clock.elapsed_seconds)
         self._teams.setdefault(event.team.identifier, event.team)
-        if is_final_third_entry(event):
+        is_entry = is_final_third_entry(event)
+        if is_entry:
             self._entries.setdefault(event.team.identifier, []).append(event)
 
         # A window never crosses a period boundary, so nothing fires until a
@@ -67,6 +74,12 @@ class AttackingSideShiftDetector:
             cooldown = self._cooldowns.get(team.identifier)
             if cooldown is not None and cooldown.is_active(clock):
                 continue
+            if self._settings.fire_on_own_entry and not (
+                is_entry and event.team.identifier == team.identifier
+            ):
+                continue
+            if not self._has_recent_own_entry(team, clock):
+                continue
             card = self._evaluate(team, event)
             if card is not None:
                 cards.append(card)
@@ -75,6 +88,15 @@ class AttackingSideShiftDetector:
                     until_elapsed_seconds=clock.elapsed_seconds + self._settings.cooldown_seconds,
                 )
         return cards
+
+    def _has_recent_own_entry(self, team: Team, clock: MatchClock) -> bool:
+        limit = self._settings.maximum_seconds_since_own_entry
+        if limit is None:
+            return True
+        entries = self._entries.get(team.identifier, [])
+        if not entries or entries[-1].clock.period != clock.period:
+            return False
+        return clock.elapsed_seconds - entries[-1].clock.elapsed_seconds <= limit
 
     def _evaluate(self, team: Team, trigger: Event) -> AttackingSideShift | None:
         now = trigger.clock

@@ -18,6 +18,14 @@ Learning and portfolio. Free StatsBomb open data is enough. Business questions a
 7. Phases end with evidence, not dates. Each gate asks: what did we learn, and does it justify the next phase?
 8. One core, many lenses: a normalized event stream replayed in order. Cards, ratings, and tactical views all read from it.
 
+## Product direction (owner, 2026-09-28)
+- Prefer insights a fan would not get from the broadcast or the scoreboard. Raw volume ("4 shots in 10 minutes") is usually too obvious unless context makes it unusual.
+- The most interesting signal is disagreement between visible outcomes and underlying performance: a scoreline that hides chance quality, finishing or goalkeeping far from what similar chances normally produce, and spells that are unusual against historical matches.
+- Live, Regista is a sparse light bulb that opens to one insight. Cards stay available at breaks in play and after the match.
+- Wording stays factual ("the scoreline doesn't reflect the difference in chance quality so far"), never "should be winning".
+
+This is direction, not a commitment to build. See [research note 16](docs/research/16-chance-quality-direction.md).
+
 ## Non-goals (for now)
 - Computer vision on broadcasts
 - Player photos, club crests, league logos
@@ -59,88 +67,78 @@ What we learned:
 
 ## Phase 2 — Research corpus, exploration, and evaluation (current)
 Goal: learn which in-match signals matter to fans, on a corpus large enough to trust, and evaluate detectors honestly.
-Specification: [docs/specs/phase-2-data-model.md](docs/specs/phase-2-data-model.md) (data model, corpus, splits)
+Specifications: [data model, corpus, and splits](docs/specs/phase-2-data-model.md); [attacking burst](docs/specs/phase-2-attacking-burst.md). Current state and open owner items: [STATUS.md](STATUS.md).
 
-No machine learning in this phase. First understand the distributions and build simple metrics we can trust.
+No machine learning in this phase. First understand the distributions and build simple metrics we can trust. The largest open uncertainty is fan value, not data engineering.
 
-The largest open uncertainty is fan value, not data engineering. Phase 2 therefore runs as a short loop: a specific fan question, then reproducible analysis, a candidate observation, a replay experience, human judgment, and refinement or rejection. It does not wait for the whole corpus before a fan sees a card.
+**Owner decisions on sequencing (2026-09-27/28):**
+- Reproducible acquisition went ahead before any viewing probe.
+- Full-match viewing was declined. Automated development-only audits are proxies for signal quality, never owner judgments of fan usefulness.
+- A cross-provider comparison needs matched matches, compatible definitions, and a separately frozen corpus before it can support a claim.
 
-**Owner evaluation decision (2026-09-28):** full-match viewing is no longer planned for the first probe. Continue with automated, development-only checks of correctness, card volume, wording risks, and retrospective targets. These are proxies for signal quality, not owner judgments of fan usefulness; do not mark the fan-value gate as passed. A cross-provider comparison needs matched matches, compatible definitions, and a separately frozen corpus before it can support a claim.
+**Scope freeze (2026-09-28):** no new Phase 3–6 work until the Phase 2 gate below is decided. Existing provisional work in those phases stays as it is, unused by the default card stream except where noted.
 
-**Owner sequencing decision (2026-09-27):** proceed with reproducible data acquisition now, deferring the viewing probe. This supersedes the earlier probe-before-bulk-download gate for the first development-data wave. It does not mark the probe complete or establish fan value. Acquire the 266 Premier League development matches and four already-inspected development matches first; keep held-out event files untouched. See [increment 6](docs/increments/06-reproducible-acquisition.md). Subsequent increments still end with a check-in.
+### Done
+1. Catalog: `catalog/corpus.toml`, 1,894 matches in 13 competition-seasons ([increment 5](docs/increments/05-catalog-and-frozen-splits.md)).
+2. Frozen splits `splits/v1.json`: 1,340 development, 279 validation, 275 test, plus a 24-match human-review set drawn from validation.
+3. Reproducible acquisition and validation of 800 development matches, 174 teams, 2015–2024 ([increments 6](docs/increments/06-reproducible-acquisition.md)–[9](docs/increments/09-development-wave-2.md), [12](docs/increments/12-development-restoration.md)). No held-out event file has been opened.
+4. The development DuckDB warehouse with analytical tables and data-quality reports ([increment 8](docs/increments/08-analytical-tables-and-first-wave-audit.md)), private R2 backup with a proven restore ([increment 10](docs/increments/10-remote-storage.md)), and Windows portability ([increment 11](docs/increments/11-windows-portability.md)).
+5. Exploration notes, all on development data only:
+   - territory and threat: [05](docs/research/05-territory-and-threat.md) and [06](docs/research/06-territory-earlier-match.md);
+   - side-shift audits: [12](docs/research/12-side-shift-automated-audit.md) and [13](docs/research/13-side-shift-flagged-cards.md);
+   - side-shift timing and wording variants: [14](docs/research/14-side-shift-timing-and-wording.md);
+   - the second detector: [15](docs/research/15-second-detector-attacking-burst.md).
+6. Detector refinement ([increment 19](docs/increments/19-phase2-gate-readiness.md)):
+   - The side shift now fires only at the team's own entry, with neutral wording.
+   - The attacking burst was added as a second card type, because the side shift alone covers 8% of low-volume team performances.
+   - `regista replay` shows both detectors in one stream.
+7. The fan-value method was replaced with a card-judging packet: [probe 02](docs/research/probe-02.md). The earlier full-match probe is [probe 01](docs/research/probe-01.md).
+8. First packet judged (2026-09-28, all 14 cards):
+   - Burst: 6 of 11 "no".
+   - Side shift: 2 yes and 1 maybe of 3.
+   - Occasion: after the match and at stoppages, not live play.
+   - Gate decision pending: no pass bar was set before judging.
+9. Chance quality against the scoreline was sized as the next candidate direction: [research note 16](docs/research/16-chance-quality-direction.md).
+10. Score against chance quality, replayed at every shot ([research note 17](docs/research/17-score-against-chance-quality.md)): at a 1.0 xG margin it fires in 122 of 800 matches, but only 12 of 166 candidates have comparable shot counts. The next step is a small owner packet before any detector.
+11. [Probe 03](docs/research/probe-03.md): a pre-registered 12-example chance-quality packet (more shots, similar volume, one dominant chance, finishing or goalkeeping). Awaiting owner judgment.
 
-Foundations, in order:
-1. Catalog of providers, competitions, seasons, and matches, with corpus roles: core breadth (Premier League, La Liga, Serie A, Ligue 1 2015/16; 1,517 matches), modern robustness (recent single-team seasons and tournaments; 377 matches), and a 360 subset kept for Phase 6. **Done (2026-09-27):** `catalog/corpus.toml`; 14 pinned index files verified, covering 1,894 matches in 13 competition-seasons. No bulk event download.
-2. Freeze development, validation, and test splits (chronological, about 70/15/15 within each competition-season) from the match index alone, plus a 24-match human-review set drawn from validation. **Done (2026-09-27):** `splits/v1.json` assigns 1,340 development, 279 validation, and 275 test matches, with 24 validation review identifiers. Whole-date inspected exceptions are recorded in the specification. See [increment 5](docs/increments/05-catalog-and-frozen-splits.md).
-3. **Fan-value probe 01**, originally designed as cards read beside three official full replays. The sheets were generated for Barcelona v Espanyol (2016), Croatia v Brazil, and Netherlands v Argentina (World Cup 2022). On 2026-09-28 Kassahun declined full-match viewing; the sheets remain available, but their owner judgment columns are blank and the probe is not complete. See `docs/research/probe-01.md`. Automated signal audits now proceed without treating them as evidence of fan usefulness.
+### Fan questions that guide the research
+- What changed in the last 10–15 minutes?
+- Who has taken control even though the score has not changed?
+- Is the pressure dangerous or just possession?
+- Which player suddenly became much more involved?
+- Has a team stopped progressing through an area or player that worked earlier?
+- Are chances being created differently than earlier?
+- Did observable behavior change around a substitution or formation change? Report the observations separately, never claim causality.
+- Is this stretch unusual compared with this team's normal behavior? Keep two axes apart and never merge them into one "momentum" score:
+  - what an observation is compared with: earlier in this match, this team's prior matches, or league or peer history;
+  - what it claims: that something changed, that it is unusual, or that it is threatening.
 
-Data engineering, shaped by what the probe teaches:
+  "Threatening" is measured from the spell itself (for example its shots, xG, and box entries), never from what happened afterwards.
 
-4. Reproducible download into `data/` pinned to a provider commit, with a manifest and checksums (raw data is never committed; see [DATA_SOURCES.md](DATA_SOURCES.md)). **First development batch done (2026-09-27):** 270 matches, 931,293 event records, 554 checksummed source files; all verified after acquisition. [Increment 6](docs/increments/06-reproducible-acquisition.md) records commands and integrity checks.
-5. Validate every match through the adapter and normalize it into Regista-owned tables. **Done for the first development wave (2026-09-27):** 270 of 270 matches passed validation and every blocking check. See [increment 7](docs/increments/07-validation-and-normalized-warehouse.md).
-6. DuckDB analytical tables and data-quality reports. **Done (2026-09-27):** `data/warehouse/regista.duckdb` (development only) rebuilds deterministically. The inventory, quality findings, and owner decisions needed (box-entry definition, field-tilt minimum) are in [increment 8](docs/increments/08-analytical-tables-and-first-wave-audit.md).
+What happened after a pattern is a legitimate research question and evaluation target. It never feeds a card shown earlier, and it does not prove the card was useful to a fan.
 
-Ingestion runs in waves: Premier League 2015/16 first, then the rest of core breadth, then modern robustness. Waves 2 and 3 wait until a specific question needs them.
+### Gate (revised 2026-09-28)
+Question: does Regista's card stream tell a fan something worth opening during play, or after the match, that the broadcast would not already have told them?
 
-**Wave 2 (owner request, 2026-09-27):** grow development data for diversity. It added the nine modern-robustness sets and Serie A 2015/16, for 800 development matches from 174 teams, 2015–2024, club and international. There were 0 exclusions, and the rebuild is deterministic. No split change. See [increment 9](docs/increments/09-development-wave-2.md).
+Method: [probe 02](docs/research/probe-02.md), a 14-card judging packet from five development matches. It is framed around the owner's proposed experience: during play, a small light-bulb indicator that opens to the insight; every card available after the match.
+1. Kassahun records a pass bar in probe 02 **before** opening the packet.
+2. Kassahun judges the packet and exports the answers.
+3. The answers are transferred verbatim, and the decision follows the pass bar:
+   - **Pass:** freeze the detector variants, compare them on validation (correctness, cards per match, timeliness), then take one final estimate on test. Build a viewer only if the pass shows during-play value worth prototyping.
+   - **Fail:** fix detection before anything else. If both card types are judged obvious, the next candidates are the owner's "relative to other matches" comparison (baselines from earlier kickoffs only) and, by explicit owner decision, lifting the scope freeze for tactical content (recorded formation changes, Phase 3).
 
-**Remote storage (2026-09-27):** private R2 backup and restore (`regista data remote`) is implemented. The real backup and full restore proof passed on 2026-09-27: the restored corpus rebuilt an identical warehouse. See [increment 10](docs/increments/10-remote-storage.md).
+Known limits of this method: it cannot measure missed moments, live timing against the broadcast, or attention cost while watching. They stay open, not passed.
 
-**Source backup (2026-09-27):** the code is in a private GitHub repository with a minimal CI workflow (lint, format, strict types, synthetic and unit tests). It is a backup, not a public release.
-
-**Windows portability (2026-09-28):** acquisition and remote restore file operations now run on Windows; the synthetic suite passes there. See [increment 11](docs/increments/11-windows-portability.md).
-
-**Probe data restored (2026-09-28):** the four inspected development matches and pinned indexes are available in the current checkout; the three probe sheets were regenerated from the acquisition pipeline. The owner viewing gate remains pending. See [probe 01](docs/research/probe-01.md).
-
-**Development warehouse restored (2026-09-28):** all 800 development matches were verified and normalized from the pinned source in this checkout; the warehouse contains no held-out matches. See [increment 12](docs/increments/12-development-restoration.md).
-
-**Replay path aligned (2026-09-28):** `regista replay --match` now reads from the pinned `data/raw/` corpus by default. The existing `--events-dir` option still accepts an explicit event directory.
-
-Research, on development data only (each piece of research is written up as a research note; see [docs/research/TEMPLATE.md](docs/research/TEMPLATE.md)):
-
-7. Explore the development data. First note (2026-09-27): [research note 05](docs/research/05-territory-and-threat.md), territory versus threat in 10-minute windows. Retrospective; no detector change.
-   Follow-up (2026-09-28): [research note 06](docs/research/06-territory-earlier-match.md) compares each spell with earlier play and score state. The association remains modest; no detector change or fan-value claim.
-   Automated side-shift audit (2026-09-28): [research note 12](docs/research/12-side-shift-automated-audit.md) replays all 800 acquired development matches, checks card evidence and frequency, and identifies wording and timing cases for further study. No detector change or fan-value claim.
-   Independent raw-record follow-up (2026-09-28): [research note 13](docs/research/13-side-shift-flagged-cards.md) verifies all 1,591 emitted cards' supporting event sets and channel counts; the flagged directions and other-team trigger mechanisms are real behavior rather than count mismatches. Wording and timing variants remain to be tested on development only.
-8. Turn fan questions into candidate signals:
-   - What changed in the last 10–15 minutes?
-   - Who has taken control even though the score has not changed?
-   - Is the pressure dangerous or just possession?
-   - Which player suddenly became much more involved?
-   - Has a team stopped progressing through an area or player that worked earlier?
-   - Are chances being created differently than earlier?
-   - Did observable behavior change around a substitution or formation change? Report the observations separately, never claim causality.
-   - Is this stretch unusual compared with this team's normal behavior? Keep two axes apart and never merge them into one "momentum" score:
-     - what an observation is compared with: earlier in this match, this team's prior matches, or league or peer history;
-     - what it claims: that something changed, that it is unusual, or that it is threatening.
-
-     "Threatening" is measured from the spell itself (for example its shots, xG, and box entries), never from what happened afterwards.
-   - Later: which actions contributed most to a dangerous spell? (This leads into Phase 4.)
-
-   Exploration is expected to kill some detector ideas and produce better ones. What happened after a pattern (for example, shots following a shift) is a legitimate research question and an evaluation target. It never feeds a card shown earlier, and it does not prove the card was useful to a fan.
-
-Detectors and evaluation:
-
-9. Build or refine detectors from what survives the probe and exploration. Candidates carried over:
-   - field tilt as a reusable metric (definition in AGENTS.md);
-   - attacking burst (shots and final-third entries shown separately);
-   - player involvement (share of team pass attempts while on the pitch);
-   - separate open-play and set-piece entry counts (detectors use open play only).
-10. Evaluate: compare variants on validation, then take one final estimate on test.
-    - Correctness: precision, cards per match, missed moments.
-    - Experience: timeliness, added understanding, attention cost, repetition across the combined card stream, trust, and whether the person would use Regista for another match.
-    - With a handful of judges, the experience measures are reported as counts and quotes, never as percentages.
-    - A log of correct but unhelpful cards is kept as deliberately as the good ones. First entry: the 23:11 "shift to the center" card on match 3773497, which is mostly a move away from the right.
-
-Also in this phase:
-- Labeling guide, then hand-labeled noteworthy moments on the human-review set (owned by Kassahun).
-- Feed field checklist (desk check, no purchase): which fields do the detectors need, and which plausible live feeds provide them? Fields known only in hindsight in the finalized provider data are marked as such (see the Phase 2 specification).
-- Once the probe shows the experience is worth building, a minimal replay viewer: a timeline, cards, and an evidence view (counts, events, pitch map). Python exports one JSON file per match; a TypeScript + React viewer renders it (see [docs/STACK.md](docs/STACK.md)). Figures for write-ups use `mplsoccer`. Until then, card timelines come from the command line.
-- Show replays to 5–10 people. Key question: "Which card would have made you look away from the television?" If people value the observations at halftime or afterward but not during play, consider changing the usage occasion before adding capabilities.
-
-Gate: is a replayed match worth watching with Regista? If not, fix detection before anything else.
+### Deferred until the gate is decided
+- Labeling guide and hand-labeled noteworthy moments on the human-review set (owned by Kassahun); needed to measure precision and missed moments on validation.
+- Feed field checklist (desk check, no purchase).
+- The minimal replay viewer (see [docs/STACK.md](docs/STACK.md)) and showing replays to 5–10 people. The key question becomes: "Which light bulb would you have opened?"
+- More detector candidates: field tilt (needs an owner-set minimum), player involvement, separate set-piece entry counts.
+- Log of correct but unhelpful cards. First entry: the match 3773497 "center" card (now 24:14), which is mostly a move away from the right.
 
 ## Phase 3 — Match facts already in the event data
+*Frozen until the Phase 2 gate is decided (2026-09-28).*
 - Development-only inventory (2026-09-28): [research note 07](docs/research/07-recorded-match-facts.md) found 1,600 starting lineups, 5,384 substitutions, and 743 recorded formation changes across 800 matches. A separate factual replay stream is justified provisionally; fan value and combined-stream redundancy remain unjudged.
 - Provisional implementation (2026-09-28): [recorded-fact specification](docs/specs/phase-3-recorded-match-facts.md) and [increment 13](docs/increments/13-recorded-match-facts.md) add `replay --facts`. All 800 development event files replayed with the expected fact counts. The default Phase 2 card feed is unchanged.
 - Cards from recorded formation changes (Tactical Shift), substitutions, and starting lineups.
@@ -149,6 +147,7 @@ Gate: is a replayed match worth watching with Regista? If not, fix detection bef
 Gate: the cards are correct against the event data and are not redundant with Phase 2 cards.
 
 ## Phase 4 — Action value
+*Frozen until the Phase 2 gate is decided (2026-09-28).*
 - Provisional research foundation (2026-09-28): a provider-neutral action-value contract, geometric movement baseline, development-only expected-threat trainer, and synthetic equation cross-check are implemented. The full-development fitted grid is a retrospective research artifact and cannot support leakage-free replay claims for its training matches. A strict date-cutoff option supplies an earlier-trained surface for research; deployment-time provenance checks remain. See [research note 08](docs/research/08-expected-threat-foundation.md).
 - Chronological development check (2026-09-28): a surface trained on 673 pre-2023 development matches was compared on 127 later development matches. It did not improve end-location shot/goal ranking over the geometric heuristic on this proxy. No detector promotion follows; see [research note 09](docs/research/09-expected-threat-later-matches.md).
 - Heuristic valuer first (the idea from the original rating plan), then a learned possession-value model, both behind the same interface.
@@ -159,6 +158,7 @@ Gate: the cards are correct against the event data and are not redundant with Ph
 Gate: the model measurably improves card precision, or the explorer answers questions the cards cannot.
 
 ## Phase 5 — Context and provenance layer
+*Frozen until the Phase 2 gate is decided (2026-09-28).*
 - Provisional infrastructure (2026-09-28): an append-only source-claim DuckDB store and immutable kickoff snapshot enforce publication, retrieval, and store-recording cutoffs plus validity dates. It contains no curated real-world claims or context cards. See the [source-claim specification](docs/specs/phase-5-source-claims.md) and [increment 16](docs/increments/16-source-claim-store.md).
 - Read-only Wikidata research adapter (2026-09-28): a bounded team-QID query returns unreviewed head-coach tenure candidates with statement links, optional references, and date precision. It does not populate `source_claims`; live endpoint validation and owner source review remain. See [research note 10](docs/research/10-wikidata-coach-candidates.md).
 - `source_claims` table (subject, predicate, value, dates, source, retrieval time, confidence, license class).
@@ -169,6 +169,7 @@ Gate: the model measurably improves card precision, or the explorer answers ques
 Gate: every context card can answer "how do you know?" instantly.
 
 ## Phase 6 — Positional and tactical layer
+*Frozen until the Phase 2 gate is decided (2026-09-28).*
 - Event-data baseline (2026-09-28): development-only recovery-location and completed-movement directness definitions covered all 1,600 team-matches. They are retrospective ball-action descriptors, not defensive-line estimates or tactical cards. See [research note 11](docs/research/11-event-data-recovery-and-directness.md).
 - SkillCorner open tracking sample and StatsBomb 360 frames for positional experiments. `kloppy` may load them, but only inside an adapter, never in domain code.
 - Event-data comparisons with precise definitions: recovery location, directness.
@@ -194,9 +195,11 @@ Broadcast video understanding (player identification, tracking) only if earlier 
 3. Trust: one wrong fact breaks the premise.
 4. Replay versus live: replay proves engine behavior, not live delivery. Finalized provider records contain fields known only in hindsight (for example, pass shot-assist flags, carries derived from the next event, and forward links between events). Prefix invariance alone cannot prove a field existed at that moment.
 5. Scope creep and planning spirals: finish the current phase before expanding.
-6. Share-based detectors favor the team with more of the ball; the team with less possession can be invisible.
+6. Share-based detectors favor the team with more of the ball; the team with less possession can be invisible. (At corpus scale: the side shift covers 8% of the lowest entry-volume quartile; research note 15.)
+7. Obviousness: a correct card that repeats what the broadcast or the fan's own eyes already said has little value (owner concern, 2026-09-28).
 
 ## Open questions
+- Usage occasion: the owner proposed (2026-09-28) a light-bulb indicator during play that opens to one insight, with the full card list after the match. Which content earns the indicator, and does anything earn it during play rather than afterwards? Probe 02 asks per card.
 - What counts as "noteworthy" in labeling, and how do we label without circularity (marking only what the detector already sees)? (Write a labeling guide.)
 - Does any modern robustness set earn a role beyond checking that results still hold on recent football?
 - Which optional branch, if any, earns a place after Phase 4?

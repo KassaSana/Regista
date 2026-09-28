@@ -21,6 +21,7 @@ from regista.domain.events import (
     FormationDetail,
     MatchClock,
     NamedPlayer,
+    ShotDetail,
     SubstitutionDetail,
     Team,
 )
@@ -31,6 +32,9 @@ from regista.domain.ids import EventId, MatchId, PlayerId, TeamId
 SET_PIECE_PASS_TYPES = frozenset({"Corner", "Free Kick", "Throw-in", "Goal Kick", "Kick Off"})
 # Pass types that happen during open play.
 OPEN_PLAY_PASS_TYPES = frozenset({"Recovery", "Interception"})
+
+# Shot types (``shot.type.name``). Only penalties are treated differently.
+NON_PENALTY_SHOT_TYPES = frozenset({"Open Play", "Free Kick", "Corner", "Kick Off"})
 
 # Every StatsBomb event type (open-data specification v4) mapped onto Regista's
 # vocabulary. An unlisted type fails loudly: it must be classified on purpose.
@@ -134,7 +138,18 @@ def normalize_event(record: Mapping[str, object], match_id: MatchId) -> Event:
         source=SOURCE,
         provider_record=MappingProxyType(dict(record)),
         match_fact=_match_fact(record, action, type_name),
+        shot=_shot(record) if action is ActionType.SHOT else None,
     )
+
+
+def _shot(record: Mapping[str, object]) -> ShotDetail:
+    name = _name_of(_as_mapping(record.get("shot"), "shot").get("type"), "shot.type")
+    if name == "Penalty":
+        return ShotDetail(penalty=True)
+    if name in NON_PENALTY_SHOT_TYPES:
+        return ShotDetail(penalty=False)
+    message = f"unknown shot type {name!r}: classify it as a penalty or not"
+    raise StatsBombFormatError(message)
 
 
 def _named_player(value: object, description: str) -> NamedPlayer:

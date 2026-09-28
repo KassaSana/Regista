@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-28
 
-**Status: sheets generated; full-match viewing declined by Kassahun on 2026-09-28.** The owner judgment columns remain blank. This proposed usability test does not establish fan value; automated development-only evaluation continues in [research note 12](12-side-shift-automated-audit.md).
+**Status: superseded by [probe 02](probe-02.md) (card-judging packet) for the Phase 2 gate. Sheets generated; full-match viewing declined by Kassahun on 2026-09-28.** The owner judgment columns remain blank. This proposed usability test does not establish fan value; automated development-only evaluation continues in [research note 12](12-side-shift-automated-audit.md).
 
 An [agent mechanical pre-review](03-probe-01-mechanical-review.md) reproduced the observation counts and checked sampled prefixes on 2026-09-27. It records implementation limitations and clustered observations; it does not supply the owner judgments or complete this probe.
 

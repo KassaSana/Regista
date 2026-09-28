@@ -17,10 +17,12 @@ from regista.adapters.statsbomb.download import fetch_payload, plan_files
 from regista.adapters.statsbomb.events import load_events
 from regista.adapters.statsbomb.matches import load_match_records
 from regista.adapters.statsbomb.normalize import ADAPTER_VERSION, normalize_match
+from regista.detectors.attacking_burst import AttackingBurstDetector, BurstSettings
 from regista.detectors.attacking_side_shift import AttackingSideShiftDetector, SideShiftSettings
 from regista.detectors.recorded_match_facts import RecordedMatchFactsDetector
 from regista.domain.catalog import CorpusConfiguration, IndexCatalog
 from regista.domain.ids import MatchId
+from regista.domain.insights import AttackingBurst, AttackingSideShift
 from regista.domain.replay import replay
 from regista.pipeline.catalog import load_corpus
 from regista.pipeline.download import acquire_files, read_manifest, select_development_matches
@@ -40,6 +42,8 @@ from regista.pipeline.remote import (
 from regista.pipeline.splits import assign_splits, freeze_splits
 from regista.storage.r2 import R2Store
 from regista.templates import (
+    render_attacking_burst,
+    render_attacking_burst_evidence,
     render_attacking_side_shift,
     render_clock,
     render_evidence,
@@ -686,11 +690,26 @@ def main(argv: Sequence[str] | None = None) -> int:
                 print(f"  recorded event: {fact.evidence_event_id}")
         print(ATTRIBUTION)
         return 0
-    cards = list(replay(events, AttackingSideShiftDetector(SideShiftSettings())))
+    events_by_identifier = {event.identifier: event for event in events}
+    shifts = list(replay(events, AttackingSideShiftDetector(SideShiftSettings())))
+    bursts = list(replay(events, AttackingBurstDetector(BurstSettings())))
+    # One card stream in replay order; at a shared trigger, the burst comes first.
+    cards: list[AttackingSideShift | AttackingBurst] = sorted(
+        [*bursts, *shifts],
+        key=lambda card: events_by_identifier[card.trigger_event_id].sequence,
+    )
     if not cards:
         print("No cards.")
-    events_by_identifier = {event.identifier: event for event in events}
     for card in cards:
+        if isinstance(card, AttackingBurst):
+            print(f"[{render_clock(card.fired_at)}] {render_attacking_burst(card)}")
+            if arguments.evidence:
+                shots = [events_by_identifier[identifier] for identifier in card.recent_shot_ids]
+                print("\n".join(render_attacking_burst_evidence(card, shots)))
+            else:
+                print(f"  recent shots: {', '.join(card.recent_shot_ids)}")
+                print(f"  recent entries: {', '.join(card.recent_entry_ids)}")
+            continue
         print(f"[{render_clock(card.fired_at)}] {render_attacking_side_shift(card)}")
         if arguments.evidence:
             recent = [events_by_identifier[identifier] for identifier in card.recent_entry_ids]

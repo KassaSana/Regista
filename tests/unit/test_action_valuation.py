@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from regista.domain.events import ActionType, BallMovement, Event, MatchClock, Team
+from regista.domain.events import ActionType, BallMovement, Event, MatchClock, ShotDetail, Team
 from regista.domain.geometry import Point
 from regista.domain.ids import EventId, MatchId, TeamId
 from regista.domain.replay import replay
@@ -45,6 +45,7 @@ def event(
         movement,
         "Synthetic source",
         {},
+        shot=ShotDetail(penalty=False) if action is ActionType.SHOT else None,
     )
 
 

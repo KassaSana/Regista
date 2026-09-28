@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from regista.domain.entries import Channel
-from regista.domain.events import ActionType, BallMovement, Event, MatchClock, Team
+from regista.domain.events import ActionType, BallMovement, Event, MatchClock, ShotDetail, Team
 from regista.domain.geometry import Point
 from regista.domain.ids import EventId, MatchId, TeamId
 
@@ -25,6 +25,19 @@ class EventStream:
     def other(self, team: Team, period: int, minute: int, second: int = 0) -> Event:
         """Add a non-moving event (it only advances the replay clock)."""
         return self._add(team, MatchClock(period, minute, second), ActionType.OTHER, None)
+
+    def shot(
+        self, team: Team, period: int, minute: int, second: int = 0, *, penalty: bool = False
+    ) -> Event:
+        """Add a shot from the edge of the box."""
+        return self._add(
+            team,
+            MatchClock(period, minute, second),
+            ActionType.SHOT,
+            None,
+            location=Point(x=102.0, y=40.0),
+            shot=ShotDetail(penalty=penalty),
+        )
 
     def entry(
         self,
@@ -48,7 +61,14 @@ class EventStream:
         return self._add(team, MatchClock(period, minute, second), action, movement)
 
     def _add(
-        self, team: Team, clock: MatchClock, action: ActionType, movement: BallMovement | None
+        self,
+        team: Team,
+        clock: MatchClock,
+        action: ActionType,
+        movement: BallMovement | None,
+        *,
+        location: Point | None = None,
+        shot: ShotDetail | None = None,
     ) -> Event:
         sequence = len(self.events) + 1
         event = Event(
@@ -58,10 +78,11 @@ class EventStream:
             clock=clock,
             team=team,
             action=action,
-            location=None if movement is None else movement.start,
+            location=location if movement is None else movement.start,
             movement=movement,
             source=SOURCE,
             provider_record={},
+            shot=shot,
         )
         self.events.append(event)
         return event

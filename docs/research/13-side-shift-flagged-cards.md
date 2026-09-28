@@ -64,4 +64,6 @@ Confidence: **0.99** that the emitted-card evidence and the two flagged counts r
 
 **Investigate further.** Do not change production thresholds or wording from these counts alone. The next development-only comparison should test a precise, neutral share-change sentence for non-plurality cards and a rule that requires a new entry by the card team before firing. Measure how many cards each variant changes or suppresses, including quiet and missed-moment cases, before freezing a variant for validation.
 
+Follow-up: [research note 14](14-side-shift-timing-and-wording.md) ran both comparisons and changed the timing rule and wording provisionally.
+
 Data: StatsBomb

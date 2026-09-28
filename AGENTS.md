@@ -1,9 +1,10 @@
 # Instructions for Coding Agents
 
-Last updated: 2026-09-27
+Last updated: 2026-09-28
 
 ## Scope discipline
 - Work only on the current phase in ROADMAP.md. Stop and check in after each increment.
+- Phases 3–6 are frozen until the Phase 2 gate is decided; see [STATUS.md](STATUS.md).
 - Do not add features, dependencies, or abstractions for future phases.
 - Stack choices live in [docs/STACK.md](docs/STACK.md); changing one is a recorded decision, not a drive-by.
 
@@ -62,7 +63,8 @@ I own: labeled evaluation moments, fan-usefulness judgments (including probe jud
 
 ## Locked definitions
 Record metric definitions here as they are decided. Full detector specifications live in `docs/specs/`.
-- Phase 1 detector: [docs/specs/phase-1-attacking-side-shift.md](docs/specs/phase-1-attacking-side-shift.md) (status: initial defaults to evaluate).
+- Phase 1 detector: [docs/specs/phase-1-attacking-side-shift.md](docs/specs/phase-1-attacking-side-shift.md) (status: initial defaults to evaluate; since 2026-09-28 a team is evaluated only at its own final-third entries).
+- Phase 2 attacking burst: [docs/specs/phase-2-attacking-burst.md](docs/specs/phase-2-attacking-burst.md) (status: candidate under owner review; penalties never count as shots).
 - Phase 2 data model, corpus, and splits: [docs/specs/phase-2-data-model.md](docs/specs/phase-2-data-model.md) (status: development warehouse implemented for 800 development matches; held-out warehouse and `team_window_distributions` still design).
 - Final-third entry: an open-play completed pass or carry starting before x = 80 and ending at or beyond x = 80 (attacking frame).
 - Completed pass: the provider record has no outcome. Any recorded outcome, including "Unknown", means not completed; Regista never claims a completion the provider cannot confirm (match 3773497 has 4 "Unknown" passes). Carries always count as completed.

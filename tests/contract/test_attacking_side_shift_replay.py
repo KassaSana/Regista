@@ -169,7 +169,8 @@ def _independent_cards() -> list[tuple[object, ...]]:
             entries.append((team, period, now, channel))
         if now - period_starts[period] < 600:
             continue
-        for candidate in teams:
+        # A team is checked only at its own final-third entry.
+        for candidate in [team] if channel is not None else []:
             cooldown = cooldowns.get(candidate)
             if cooldown is not None and cooldown[0] == period and now < cooldown[1]:
                 continue

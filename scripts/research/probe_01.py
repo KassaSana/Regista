@@ -20,11 +20,14 @@ from pathlib import Path
 from typing import cast
 
 from regista.adapters.statsbomb.events import load_events
-from regista.detectors.attacking_side_shift import AttackingSideShiftDetector
+from regista.detectors.attacking_side_shift import AttackingSideShiftDetector, SideShiftSettings
 from regista.domain.ids import MatchId
 from regista.domain.replay import replay
 from regista.pipeline.catalog import load_corpus
 from regista.templates import render_attacking_side_shift
+
+# The note this script supports used the Phase 1 rule: evaluate teams at every event.
+PHASE_ONE_TIMING = SideShiftSettings(fire_on_own_entry=False)
 
 STATSBOMB_DATA = (
     Path("data/raw/statsbomb-open-data")
@@ -288,7 +291,7 @@ def side_shift_observations(match_id: int) -> list[Observation]:
             SIDE_SHIFT,
             render_attacking_side_shift(card),
         )
-        for card in replay(events, AttackingSideShiftDetector())
+        for card in replay(events, AttackingSideShiftDetector(PHASE_ONE_TIMING))
     ]
 
 

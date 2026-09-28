@@ -53,8 +53,48 @@ def test_every_known_provider_type_maps_to_a_regista_type(type_name: str) -> Non
     elif type_name == "Substitution":
         record["player"] = {"id": 1, "name": "Player One"}
         record["substitution"] = {"replacement": {"id": 12, "name": "Player Twelve"}}
+    elif type_name == "Shot":
+        record["shot"] = {"type": {"id": 87, "name": "Open Play"}}
 
     assert normalize_event(record, MatchId(1)).action is ACTIONS_BY_TYPE_NAME[type_name]
+
+
+@pytest.mark.parametrize(
+    ("shot_type", "penalty"),
+    [("Open Play", False), ("Free Kick", False), ("Corner", False), ("Penalty", True)],
+)
+def test_shot_type_marks_only_penalties(shot_type: str, penalty: bool) -> None:
+    record = {
+        "id": "e",
+        "index": 1,
+        "period": 1,
+        "minute": 0,
+        "second": 0,
+        "type": {"id": 16, "name": "Shot"},
+        "team": HOME,
+        "location": [100.0, 40.0],
+        "shot": {"type": {"id": 0, "name": shot_type}},
+    }
+
+    shot = normalize_event(record, MatchId(1)).shot
+    assert shot is not None
+    assert shot.penalty is penalty
+
+
+def test_an_unknown_shot_type_fails_loudly() -> None:
+    record = {
+        "id": "e",
+        "index": 1,
+        "period": 1,
+        "minute": 0,
+        "second": 0,
+        "type": {"id": 16, "name": "Shot"},
+        "team": HOME,
+        "shot": {"type": {"id": 0, "name": "Rabona Special"}},
+    }
+
+    with pytest.raises(StatsBombFormatError, match="unknown shot type"):
+        normalize_event(record, MatchId(1))
 
 
 def test_an_unknown_provider_type_fails_loudly() -> None:

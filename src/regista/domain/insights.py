@@ -77,3 +77,25 @@ class AttackingSideShift:
             for channel in Channel
             if self.recent.share(channel) < self.baseline.share(channel)
         )
+
+
+@dataclass(frozen=True, slots=True)
+class AttackingBurst:
+    """A team's recent shots came much faster than its earlier rate in the match.
+
+    Shots decide the card. Final-third entries are shown beside them, separately,
+    and never change whether it fires. ``earlier_seconds`` is the playing time
+    before the recent window, across every period so far.
+    """
+
+    match_id: MatchId
+    team: Team
+    fired_at: MatchClock
+    trigger_event_id: EventId
+    window_seconds: int
+    earlier_seconds: int
+    recent_shot_ids: tuple[EventId, ...]
+    earlier_shot_ids: tuple[EventId, ...]
+    recent_entry_ids: tuple[EventId, ...]
+    earlier_entry_ids: tuple[EventId, ...]
+    sources: tuple[str, ...]

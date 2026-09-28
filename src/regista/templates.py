@@ -12,7 +12,7 @@ from math import floor
 
 from regista.domain.entries import Channel, channel_of
 from regista.domain.events import Event, MatchClock
-from regista.domain.insights import AttackingSideShift
+from regista.domain.insights import AttackingBurst, AttackingSideShift
 from regista.domain.match_facts import (
     FormationChangeFact,
     MatchFact,
@@ -52,16 +52,78 @@ def render_match_fact_evidence(fact: MatchFact) -> list[str]:
     return [f"  recorded event: {fact.evidence_event_id} ({fact.source})"]
 
 
+# Where an entry ends, as a phrase ("ending on the left") and as a noun ("the left").
+_ENDING = {
+    Channel.LEFT: "on the left",
+    Channel.CENTER: "in the center",
+    Channel.RIGHT: "on the right",
+}
+
+
+def _possessive(name: str) -> str:
+    return f"{name}'" if name.endswith("s") else f"{name}'s"
+
+
 def render_attacking_side_shift(card: AttackingSideShift) -> str:
-    """Return the one-sentence card text for an attacking-side shift."""
+    """Return the card text for an attacking-side shift.
+
+    The sentence says a channel's share grew, never that it became the main
+    route. When another channel still has more recent entries, it says so.
+    """
     channel = card.channel
-    return (
-        f"{card.team.name}'s final-third entries have shifted to the {channel.value}: "
-        f"{card.recent.count(channel)} of the last {card.recent.total} "
+    named = card.recent.count(channel)
+    sentence = (
+        f"More of {_possessive(card.team.name)} final-third entries are ending "
+        f"{_ENDING[channel]}: {named} of the last {card.recent.total} "
         f"({_percent(card.recent.share(channel))}%), "
         f"up from {card.baseline.count(channel)} of {card.baseline.total} "
         f"({_percent(card.baseline.share(channel))}%) earlier."
     )
+    larger = [other for other in Channel if card.recent.count(other) > named]
+    if len(larger) == 1:
+        return f"{sentence} The {larger[0].value} has more: {card.recent.count(larger[0])}."
+    if larger:
+        first, second = larger
+        return (
+            f"{sentence} The {first.value} ({card.recent.count(first)}) and "
+            f"the {second.value} ({card.recent.count(second)}) have more."
+        )
+    return sentence
+
+
+def render_attacking_burst(card: AttackingBurst) -> str:
+    """Return the card text for an attacking burst: shots first, entries beside them."""
+    earlier = len(card.earlier_shot_ids)
+    return (
+        f"{card.team.name}: {_count(len(card.recent_shot_ids), 'shot')} in the last "
+        f"{card.window_seconds // 60} minutes, after {earlier or 'none'} in the previous "
+        f"{card.earlier_seconds // 60} minutes of play. Final-third entries in the last "
+        f"{card.window_seconds // 60} minutes: {len(card.recent_entry_ids)}."
+    )
+
+
+def render_attacking_burst_evidence(
+    card: AttackingBurst, recent_shots: Sequence[Event]
+) -> list[str]:
+    """List the shots in the recent window, with the earlier counts beside them."""
+    lines = [f"  recent shots ({len(recent_shots)}):"]
+    for shot in recent_shots:
+        location = (
+            ""
+            if shot.location is None
+            else f"  at ({shot.location.x:5.1f}, {shot.location.y:4.1f})"
+        )
+        lines.append(f"    {render_clock(shot.clock)}  {shot.identifier}{location}")
+    lines.append(
+        f"  earlier: {len(card.earlier_shot_ids)} shots and "
+        f"{len(card.earlier_entry_ids)} final-third entries in {card.earlier_seconds} seconds"
+    )
+    lines.append(f"  recent final-third entries: {len(card.recent_entry_ids)}")
+    return lines
+
+
+def _count(number: int, noun: str) -> str:
+    return f"{number} {noun}" if number == 1 else f"{number} {noun}s"
 
 
 def render_clock(clock: MatchClock) -> str:

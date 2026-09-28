@@ -13,12 +13,15 @@ from pathlib import Path
 from typing import cast
 
 from regista.adapters.statsbomb.events import load_events
-from regista.detectors.attacking_side_shift import AttackingSideShiftDetector
+from regista.detectors.attacking_side_shift import AttackingSideShiftDetector, SideShiftSettings
 from regista.domain.entries import Channel, is_final_third_entry
 from regista.domain.events import Event
 from regista.domain.ids import EventId, MatchId
 from regista.domain.replay import replay
 from regista.pipeline.catalog import load_corpus
+
+# The note this script supports used the Phase 1 rule: evaluate teams at every event.
+PHASE_ONE_TIMING = SideShiftSettings(fire_on_own_entry=False)
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "data/raw"
@@ -101,7 +104,7 @@ def audit() -> dict[str, object]:
                 entries_by_team[event.team.identifier].append(event)
         last_card: dict[tuple[int, str], Event] = {}
 
-        for card in replay(match_events, AttackingSideShiftDetector()):
+        for card in replay(match_events, AttackingSideShiftDetector(PHASE_ONE_TIMING)):
             trigger = by_id[card.trigger_event_id]
             team_id = int(card.team.identifier)
             if trigger.clock != card.fired_at:
