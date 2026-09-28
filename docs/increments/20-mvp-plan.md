@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-28
 
-**Status:** M0, M1, and M2 done; M3 next. Owner decision, 2026-09-28: build a thin end-to-end product before finishing every research phase. See the two-track section of [ROADMAP.md](../../ROADMAP.md).
+**Status:** M0–M3 done; M4 next. Owner decision, 2026-09-28: build a thin end-to-end product before finishing every research phase. See the two-track section of [ROADMAP.md](../../ROADMAP.md).
 
 ## Context
 Phase 2 has produced two working detectors (attacking side shift, attacking burst), a factual stream (lineups, substitutions, formation changes), and a card judgment (probe 02). Probe 03 on chance quality is waiting for your judgment. Until this decision the roadmap blocked any viewer until the Phase 2 gate was decided, and froze Phases 3–6. You have decided to stop finishing research phases in order and build the smallest usable product first:
@@ -165,3 +165,15 @@ Then run `npm run dev`, open the app in the browser pane, and play 3773497. Conf
   - 0 final-score mismatches;
   - each export names 1.0% of the match's events on average (at most 2.6%);
   - match 3773497 exports 4 cards in 33 KB, and a validation match was refused.
+
+### M3: viewer skeleton (2026-09-28)
+- `viewer/`: Vite 8, React 19, strict TypeScript 6, Biome, Vitest. No router, state library, or UI kit. The generated `src/replayTypes.ts` comes from the schema (`npm run types`).
+- A development-only Vite plugin serves `out/exports` at `/exports` and rejects anything outside that directory. A build copies no export.
+- `src/replay.ts` (pure): recorded periods are laid end to end as one replay position, because the provider minute overlaps at half time. `visibleAt` reveals goals, cards, and facts only at or after their own clock; the score is the last visible goal's.
+- Screens: a match list from `index.json`; a match screen with the scoreboard, period and clock, play/pause at 1×, 10×, or 60×, a scrubber with period markers, goals and changes so far, and "Data: StatsBomb" with a logo placeholder (the owner supplies the logo).
+- Tests (synthetic fixture with a goal in each half-time overlap): every second round-trips across half time; no goal, card, or fact is visible one second before its clock, and each is visible at it; the score at each moment; clamping; labels.
+- Checked in the browser on match 3773497:
+  - 0–0 at kickoff; 0–0 at 12:57 and 1–0 at 12:58; 2–0 at half time (47:22); the clock jumps 47:22 → 45:01; 2–0 at 59:08 and 2–1 at 59:09;
+  - playback at 60× stops at 94:06 on 2–1;
+  - no horizontal scroll at 375 px, and no console errors;
+  - path-traversal probes did not reach files outside `out/exports`.

@@ -52,6 +52,19 @@ file. The export follows `schemas/replay.schema.json` and is thin by design:
 period boundaries, goals with the running score, cards with only their own
 evidence events, and recorded facts, never the full event stream.
 
+### Run the viewer
+
+```console
+uv run regista export --match 3773497
+cd viewer
+npm install
+npm run dev
+```
+
+Open <http://localhost:5173>, pick a match, and play or scrub through it. The
+viewer only reads exports from `out/exports` through its development server;
+`npm run check` runs Biome, the TypeScript compiler, and Vitest.
+
 Provider data belongs under `data/` and is intentionally excluded from version
 control.
 
