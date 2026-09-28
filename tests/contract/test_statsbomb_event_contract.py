@@ -7,11 +7,11 @@ They never copy provider records into the repository.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from statistics import fmean
 from typing import cast
 
 import pytest
+from pinned_events import pinned_events_path
 
 from regista.adapters.statsbomb.events import load_events
 from regista.domain.ids import MatchId
@@ -19,8 +19,7 @@ from regista.domain.ids import MatchId
 pytestmark = pytest.mark.contract
 
 MATCH_ID = MatchId(3_773_497)
-REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-EVENTS_PATH = REPOSITORY_ROOT / "data/statsbomb/data/events" / f"{MATCH_ID}.json"
+EVENTS_PATH = pinned_events_path(MATCH_ID)
 
 # Every pass outcome observed means the pass did not complete, including "Unknown":
 # Regista never claims a completion the provider cannot confirm. A completed pass has none.

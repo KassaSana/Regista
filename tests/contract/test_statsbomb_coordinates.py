@@ -3,19 +3,18 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from statistics import fmean
 from typing import TypedDict, cast
 
 import pytest
+from pinned_events import pinned_events_path
 
 from regista.domain.geometry import Pitch, Point
 
 pytestmark = pytest.mark.contract
 
 MATCH_ID = 3_773_497
-REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-EVENTS_PATH = REPOSITORY_ROOT / "data/statsbomb/data/events" / f"{MATCH_ID}.json"
+EVENTS_PATH = pinned_events_path(MATCH_ID)
 
 
 class _NamedObject(TypedDict):

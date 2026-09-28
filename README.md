@@ -126,9 +126,9 @@ uv run --env-file .env regista data remote pull --warehouse latest --output data
 Held-out matches can never be pushed or pulled. See
 [increment 10](docs/increments/10-remote-storage.md) and [DATA_SOURCES.md](DATA_SOURCES.md).
 
-Contract tests (`tests/contract/`) expect the StatsBomb open-data repository
-at `data/statsbomb/` and skip when it is unavailable. Unit tests use synthetic,
-hand-built events only.
+Contract tests (`tests/contract/`) read inspected match files from the pinned
+`data/raw/` corpus and skip when those files are unavailable. Unit tests use
+synthetic, hand-built events only.
 
 ## Data attribution
 

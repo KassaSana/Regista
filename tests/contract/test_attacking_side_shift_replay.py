@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import cast
 
 import pytest
+from pinned_events import pinned_events_path
 
 from regista.adapters.statsbomb.events import load_events
 from regista.detectors.attacking_side_shift import AttackingSideShiftDetector, SideShiftSettings
@@ -31,7 +32,7 @@ pytestmark = pytest.mark.contract
 
 MATCH_ID = MatchId(3_773_497)
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-EVENTS_PATH = REPOSITORY_ROOT / "data/statsbomb/data/events" / f"{MATCH_ID}.json"
+EVENTS_PATH = pinned_events_path(MATCH_ID)
 GOLDEN_PATH = REPOSITORY_ROOT / "tests/golden" / f"{MATCH_ID}-attacking-side-shift.json"
 # Prefix-invariance cut: the first event at or after minute 60 of the second half.
 CUT_PERIOD, CUT_MINUTE = 2, 60
