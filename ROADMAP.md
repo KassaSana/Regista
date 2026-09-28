@@ -86,9 +86,11 @@ Ingestion runs in waves: Premier League 2015/16 first, then the rest of core bre
 
 **Source backup (2026-09-27):** the code is in a private GitHub repository with a minimal CI workflow (lint, format, strict types, synthetic and unit tests). It is a backup, not a public release.
 
-**Windows portability (2026-09-28):** acquisition and remote restore file operations now run on Windows; the synthetic suite passes there. See [increment 11](docs/increments/11-windows-portability.md). The full 800-match development corpus is absent from this checkout, so corpus-wide contract checks await restoration.
+**Windows portability (2026-09-28):** acquisition and remote restore file operations now run on Windows; the synthetic suite passes there. See [increment 11](docs/increments/11-windows-portability.md).
 
 **Probe data restored (2026-09-28):** the four inspected development matches and pinned indexes are available in the current checkout; the three probe sheets were regenerated from the acquisition pipeline. The owner viewing gate remains pending. See [probe 01](docs/research/probe-01.md).
+
+**Development warehouse restored (2026-09-28):** all 800 development matches were verified and normalized from the pinned source in this checkout; the warehouse contains no held-out matches. See [increment 12](docs/increments/12-development-restoration.md).
 
 Research, on development data only (each piece of research is written up as a research note; see [docs/research/TEMPLATE.md](docs/research/TEMPLATE.md)):
 
