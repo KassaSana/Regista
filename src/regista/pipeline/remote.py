@@ -290,7 +290,7 @@ def pull_manifest(store: ObjectStore, raw_directory: Path, sha256: str | None = 
     raw_directory.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(".manifest.jsonl.pulling")
     temporary.write_bytes(contents)
-    with temporary.open("rb") as handle:
+    with temporary.open("r+b") as handle:
         os.fsync(handle.fileno())
     os.replace(temporary, path)
     sync_directory(raw_directory)

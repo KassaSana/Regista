@@ -1,6 +1,6 @@
 # Regista Roadmap
 
-Last updated: 2026-09-27
+Last updated: 2026-09-28
 
 ## Vision
 A match companion for everyday soccer fans. While a match plays, Regista notices when something meaningful changes, explains it in one plain sentence, and shows the evidence behind it. Quiet when nothing matters.
@@ -85,6 +85,8 @@ Ingestion runs in waves: Premier League 2015/16 first, then the rest of core bre
 **Remote storage (2026-09-27):** private R2 backup and restore (`regista data remote`) is implemented. The real backup and full restore proof passed on 2026-09-27: the restored corpus rebuilt an identical warehouse. See [increment 10](docs/increments/10-remote-storage.md).
 
 **Source backup (2026-09-27):** the code is in a private GitHub repository with a minimal CI workflow (lint, format, strict types, synthetic and unit tests). It is a backup, not a public release.
+
+**Windows portability (2026-09-28):** acquisition and remote restore file operations now run on Windows; the synthetic suite passes there. See [increment 11](docs/increments/11-windows-portability.md). The local development corpus is absent from this checkout, so contract checks await restoration.
 
 Research, on development data only (each piece of research is written up as a research note; see [docs/research/TEMPLATE.md](docs/research/TEMPLATE.md)):
 

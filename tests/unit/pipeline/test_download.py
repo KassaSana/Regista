@@ -13,7 +13,7 @@ from regista.domain.catalog import (
     IndexSource,
     MatchIndex,
 )
-from regista.pipeline.download import acquire_files, select_development_matches
+from regista.pipeline.download import acquire_files, acquisition_lock, select_development_matches
 from regista.pipeline.splits import freeze_splits
 
 
@@ -134,12 +134,11 @@ def test_selection_rejects_heldout_and_tampered_frozen_splits(tmp_path: Path) ->
 
 
 def test_acquisition_refuses_concurrent_manifest_writers(tmp_path: Path) -> None:
-    import fcntl
-
-    with (tmp_path / ".acquisition.lock").open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        with pytest.raises(ValueError, match="another acquisition process"):
-            acquire_files([request()], tmp_path, lambda _: b"[]")
+    with (
+        acquisition_lock(tmp_path),
+        pytest.raises(ValueError, match="another acquisition process"),
+    ):
+        acquire_files([request()], tmp_path, lambda _: b"[]")
     assert not (tmp_path / "manifest.jsonl").exists()
 
 

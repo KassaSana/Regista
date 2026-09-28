@@ -93,7 +93,11 @@ def json_bytes(value: object) -> bytes:
 
 
 def sync_directory(path: Path) -> None:
-    """Persist published directory entries before recording their completion elsewhere."""
+    """Persist directory entries where the operating system exposes directory fsync."""
+    if os.name == "nt":
+        # Windows does not let os.open acquire a directory descriptor. Files are
+        # fsynced individually, and the manifest verifies them on every resume.
+        return
     descriptor = os.open(path, os.O_RDONLY)
     try:
         os.fsync(descriptor)

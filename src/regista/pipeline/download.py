@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import json
 import os
-from collections.abc import Callable, Mapping, Sequence
+import sys
+from collections.abc import Callable, Generator, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
@@ -30,6 +31,45 @@ class _CompletedFile:
     receipt: Mapping[str, object]
     outcome: str
     append: bool
+
+
+@contextmanager
+def acquisition_lock(raw_directory: Path) -> Generator[None]:
+    """Hold a non-blocking process lock while the manifest is read and written."""
+    with (raw_directory / ".acquisition.lock").open("a+b") as lock:
+        if sys.platform == "win32":
+            import msvcrt
+
+            # Windows byte-range locks need a byte at the selected position.
+            lock.seek(0, os.SEEK_END)
+            if lock.tell() == 0:
+                lock.write(b"\0")
+                lock.flush()
+            lock.seek(0)
+            try:
+                msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+            except OSError:
+                raise ValueError(
+                    "another acquisition process holds the raw-directory lock"
+                ) from None
+            try:
+                yield
+            finally:
+                lock.seek(0)
+                msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise ValueError(
+                    "another acquisition process holds the raw-directory lock"
+                ) from None
+            try:
+                yield
+            finally:
+                fcntl.flock(lock, fcntl.LOCK_UN)
 
 
 def select_development_matches(
@@ -241,11 +281,7 @@ def acquire_files(
     manifest = raw_directory / "manifest.jsonl"
     counts = {"downloaded": 0, "verified": 0, "restored": 0, "registered": 0}
     byte_count = 0
-    with (raw_directory / ".acquisition.lock").open("a") as lock:
-        try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            raise ValueError("another acquisition process holds the raw-directory lock") from None
+    with acquisition_lock(raw_directory):
         records = read_manifest(manifest)
         # Append mode is never opened during verification-only runs.
         with ThreadPoolExecutor(max_workers=workers) as executor:
