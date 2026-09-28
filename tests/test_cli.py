@@ -210,3 +210,41 @@ def test_replay_of_a_missing_match_exits_with_a_usage_error(
 
     assert exit_info.value.code == 2
     assert "no event file for match 99" in capsys.readouterr().err
+
+
+def test_export_refuses_a_held_out_match_before_reading_any_provider_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    def must_not_read(*_: object, **__: object) -> None:
+        raise AssertionError("a held-out match must be refused before any provider file is read")
+
+    monkeypatch.setattr("regista.cli.load_catalog", must_not_read)
+    monkeypatch.setattr("regista.cli.load_events", must_not_read)
+    split = tmp_path / "v1.json"
+    split.write_text(
+        json.dumps(
+            {
+                "assignments": [
+                    {"match_id": 1, "bucket": "development"},
+                    {"match_id": 3, "bucket": "test"},
+                ]
+            }
+        )
+    )
+    output = tmp_path / "exports"
+
+    for match in ("3", "404"):
+        with pytest.raises(SystemExit):
+            main(
+                [
+                    "export",
+                    "--match",
+                    match,
+                    "--split-file",
+                    str(split),
+                    "--output-directory",
+                    str(output),
+                ]
+            )
+        assert "development only" in capsys.readouterr().err
+    assert not output.exists()

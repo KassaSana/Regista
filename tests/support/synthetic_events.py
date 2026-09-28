@@ -46,6 +46,13 @@ class EventStream:
             shot=ShotDetail(penalty=penalty, scored=scored),
         )
 
+    def period_boundary(
+        self, team: Team, period: int, minute: int, second: int = 0, *, end: bool = False
+    ) -> Event:
+        """Add a recorded period start (or end, with ``end=True``)."""
+        action = ActionType.PERIOD_END if end else ActionType.PERIOD_START
+        return self._add(team, MatchClock(period, minute, second), action, None)
+
     def own_goal_for(self, team: Team, period: int, minute: int, second: int = 0) -> Event:
         """Add the event that credits ``team`` with an opponent's own goal."""
         return self._add(

@@ -45,6 +45,13 @@ card stream. Add `--evidence` to see the starting players and source
 event identifiers. Fan usefulness and combined-stream attention cost are
 still under review.
 
+For the MVP viewer, `uv run regista export --match 3773497` writes
+`out/exports/3773497.json` and refreshes `out/exports/index.json`. It accepts
+development matches only and refuses any other match before reading a provider
+file. The export follows `schemas/replay.schema.json` and is thin by design:
+period boundaries, goals with the running score, cards with only their own
+evidence events, and recorded facts, never the full event stream.
+
 Provider data belongs under `data/` and is intentionally excluded from version
 control.
 

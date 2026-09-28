@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-28
 
-**Status:** M0 and M1 done; M2 next. Owner decision, 2026-09-28: build a thin end-to-end product before finishing every research phase. See the two-track section of [ROADMAP.md](../../ROADMAP.md).
+**Status:** M0, M1, and M2 done; M3 next. Owner decision, 2026-09-28: build a thin end-to-end product before finishing every research phase. See the two-track section of [ROADMAP.md](../../ROADMAP.md).
 
 ## Context
 Phase 2 has produced two working detectors (attacking side shift, attacking burst), a factual stream (lineups, substitutions, formation changes), and a card judgment (probe 02). Probe 03 on chance quality is waiting for your judgment. Until this decision the roadmap blocked any viewer until the Phase 2 gate was decided, and froze Phases 3–6. You have decided to stop finishing research phases in order and build the smallest usable product first:
@@ -39,7 +39,7 @@ Research continues on a separate track and feeds the product; it no longer block
 3. **Replay screen:**
    - Header: teams, score, period, and match clock.
    - Controls: play/pause, speed (1×, 10×, 60×), and a scrubber.
-   - A small pitch that shows the most recent events.
+   - A small pitch that shows the open card's evidence (the export is thin; see M2).
    - A quiet facts strip for substitutions and formation changes.
 4. When a card's trigger time is reached, the **light bulb** lights up quietly (no modal). Clicking it opens **one** insight: the template sentence plus an "evidence" expander. The expander lists the supporting events and marks them on the pitch.
 5. At **half-time and full-time**, and at any time through a History tab, a **timeline** shows every surfaced insight so far. Each entry has its clock, the score at that moment, its sentence, and its evidence. It never shows cards later than the current replay position, so it does not spoil the match.
@@ -151,3 +151,17 @@ Then run `npm run dev`, open the app in the browser pane, and play 3773497. Conf
 - Tests: synthetic goal, miss, penalty goal, own goal, shootout, unknown team, and a prefix check; adapter tests for the goal outcome and own-goal credit; a contract test that match 3773497 ends at its recorded final score.
 - Validation: the replayed final score equals the provider's recorded final score in **all 800 development matches** (0 mismatches). A one-off check, not committed; no held-out file was opened.
 - Detector output and golden snapshots are unchanged.
+
+### M2: card assembly and the export contract (2026-09-28)
+- **Owner decision:** the export is thin and safe for a demo. [DATA_SOURCES.md](../../DATA_SOURCES.md) forbids full event exports in any schema, so the export carries period boundaries, goals with the running score, cards with only their own evidence events, and recorded facts. The viewer's pitch shows the open card's evidence, not all play.
+- `regista.product`: `build_card_stream` (moved out of `cli.py`; `replay` output is unchanged) and `build_match_export`. It reads domain events only and never reads the recorded final score. The architecture test allows it the domain, detectors, and templates.
+- `schemas/replay.schema.json`, version 1. Side-shift evidence is the recent-window entries; burst evidence is the recent shots plus recent entries. Baseline entries appear only as counts.
+- `regista export --match <id>` writes `out/exports/<id>.json` and `index.json`. The split is checked first from identifiers alone, so a validation, test, or unknown match is refused before any provider file is read.
+- Development dependencies `jsonschema` and `types-jsonschema`, used in tests only.
+- Tests: synthetic product tests (schema, order, experimental flag, score at the trigger with no later goal leaking, evidence ids, the thin-export guard, periods, a quiet match, and a schema rejection); a CLI refusal test; a contract test that match 3773497's export equals the goldens and ends at the recorded score.
+- Validation (one-off, not committed):
+  - all **800 development exports** validate;
+  - cards: 1,322 side shift + 867 burst = 2,189, equal to STATUS;
+  - 0 final-score mismatches;
+  - each export names 1.0% of the match's events on average (at most 2.6%);
+  - match 3773497 exports 4 cards in 33 KB, and a validation match was refused.

@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://regista.local/schemas/replay.schema.json",
+  "title": "RegistaReplayExport",
+  "description": "One match's replay export, version 1. Thin by design (DATA_SOURCES.md): period boundaries, goals with the running score, cards with only their own evidence events, and recorded facts. Never the full event stream.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "attribution", "match", "periods", "goals", "cards", "facts"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "attribution": { "const": "Data: StatsBomb" },
+    "match": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "competition", "season", "date", "home", "away"],
+      "properties": {
+        "id": { "type": "integer" },
+        "competition": { "type": "string" },
+        "season": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "home": { "$ref": "#/$defs/team" },
+        "away": { "$ref": "#/$defs/team" }
+      }
+    },
+    "periods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["period", "start", "end"],
+        "properties": {
+          "period": { "type": "integer", "minimum": 1 },
+          "start": { "$ref": "#/$defs/clock" },
+          "end": { "$ref": "#/$defs/clock" }
+        }
+      }
+    },
+    "goals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event_id", "clock", "team_id", "own_goal", "penalty", "score"],
+        "properties": {
+          "event_id": { "type": "string" },
+          "clock": { "$ref": "#/$defs/clock" },
+          "team_id": { "type": "integer" },
+          "own_goal": { "type": "boolean" },
+          "penalty": { "type": "boolean" },
+          "score": { "$ref": "#/$defs/score" }
+        }
+      }
+    },
+    "cards": { "type": "array", "items": { "$ref": "#/$defs/card" } },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["clock", "kind", "team_id", "sentence", "event_id"],
+        "properties": {
+          "clock": { "$ref": "#/$defs/clock" },
+          "kind": { "enum": ["lineup", "substitution", "formation_change"] },
+          "team_id": { "type": "integer" },
+          "sentence": { "type": "string" },
+          "event_id": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "team": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": { "id": { "type": "integer" }, "name": { "type": "string" } }
+    },
+    "clock": {
+      "description": "Provider clock: minute runs continuously across periods, so always read it with the period.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["period", "minute", "second"],
+      "properties": {
+        "period": { "type": "integer", "minimum": 1 },
+        "minute": { "type": "integer", "minimum": 0 },
+        "second": { "type": "integer", "minimum": 0, "maximum": 59 }
+      }
+    },
+    "score": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["home", "away"],
+      "properties": {
+        "home": { "type": "integer", "minimum": 0 },
+        "away": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_id", "role", "clock", "team_id", "action", "start", "end"],
+      "properties": {
+        "event_id": { "type": "string" },
+        "role": { "enum": ["recent", "shot"] },
+        "clock": { "$ref": "#/$defs/clock" },
+        "team_id": { "type": "integer" },
+        "action": { "type": "string" },
+        "start": { "oneOf": [{ "$ref": "#/$defs/point" }, { "type": "null" }] },
+        "end": { "oneOf": [{ "$ref": "#/$defs/point" }, { "type": "null" }] }
+      }
+    },
+    "card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "experimental",
+        "team_id",
+        "clock",
+        "trigger_event_id",
+        "score",
+        "sentence",
+        "evidence_lines",
+        "evidence",
+        "sources"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "enum": ["side_shift", "burst"] },
+        "experimental": { "type": "boolean" },
+        "team_id": { "type": "integer" },
+        "clock": { "$ref": "#/$defs/clock" },
+        "trigger_event_id": { "type": "string" },
+        "score": { "$ref": "#/$defs/score" },
+        "sentence": { "type": "string" },
+        "evidence_lines": { "type": "array", "items": { "type": "string" } },
+        "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+        "sources": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    }
+  }
+}

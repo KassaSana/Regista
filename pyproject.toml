@@ -21,9 +21,11 @@ build-backend = "uv_build"
 dev = [
     "boto3-stubs[s3]>=1.43.103",
     "hypothesis>=6.161.5",
+    "jsonschema>=4.26.0",
     "pyright>=1.1.411",
     "pytest>=9.1.1",
     "ruff>=0.16.0",
+    "types-jsonschema>=4.26.0.20260518",
 ]
 
 [tool.pytest.ini_options]

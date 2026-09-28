@@ -10,6 +10,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 
 from regista import __version__
 from regista.adapters.statsbomb.catalog import load_catalog, provenance_relative_path
@@ -17,12 +18,10 @@ from regista.adapters.statsbomb.download import fetch_payload, plan_files
 from regista.adapters.statsbomb.events import load_events
 from regista.adapters.statsbomb.matches import load_match_records
 from regista.adapters.statsbomb.normalize import ADAPTER_VERSION, normalize_match
-from regista.detectors.attacking_burst import AttackingBurstDetector, BurstSettings
-from regista.detectors.attacking_side_shift import AttackingSideShiftDetector, SideShiftSettings
 from regista.detectors.recorded_match_facts import RecordedMatchFactsDetector
 from regista.domain.catalog import CorpusConfiguration, IndexCatalog
 from regista.domain.ids import MatchId
-from regista.domain.insights import AttackingBurst, AttackingSideShift
+from regista.domain.insights import AttackingBurst
 from regista.domain.replay import replay
 from regista.pipeline.catalog import load_corpus
 from regista.pipeline.download import acquire_files, read_manifest, select_development_matches
@@ -40,6 +39,7 @@ from regista.pipeline.remote import (
     verify_remote,
 )
 from regista.pipeline.splits import assign_splits, freeze_splits
+from regista.product import ATTRIBUTION, build_card_stream, build_match_export
 from regista.storage.r2 import R2Store
 from regista.templates import (
     render_attacking_burst,
@@ -56,8 +56,7 @@ from regista.warehouse.research import fingerprint, quality_report, snapshot_fac
 DEFAULT_WAREHOUSE = Path("data/warehouse/regista.duckdb")
 DEFAULT_QUALITY_DIRECTORY = Path("out/dq")
 DEFAULT_DOWNLOAD_REPORTS = Path("out/downloads")
-# Required wherever StatsBomb-derived analysis is shown (see DATA_SOURCES.md).
-ATTRIBUTION = "Data: StatsBomb"
+DEFAULT_EXPORTS = Path("out/exports")
 
 
 def _season_key(value: str) -> tuple[int, int]:
@@ -102,6 +101,17 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="show provisional starting-lineup, substitution, and formation facts",
     )
+    export_command = commands.add_parser(
+        "export",
+        help="write the viewer's replay export for one development match",
+    )
+    export_command.add_argument(
+        "--match", type=int, required=True, help="StatsBomb match identifier"
+    )
+    export_command.add_argument("--corpus", type=Path, default=Path("catalog/corpus.toml"))
+    export_command.add_argument("--raw-directory", type=Path, default=Path("data/raw"))
+    export_command.add_argument("--split-file", type=Path, default=Path("splits/v1.json"))
+    export_command.add_argument("--output-directory", type=Path, default=DEFAULT_EXPORTS)
     data_command = commands.add_parser("data", help="catalog metadata and freeze research splits")
     data_commands = data_command.add_subparsers(dest="data_command", required=True)
     for name, help_text in (
@@ -652,6 +662,53 @@ def _run_data(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def _run_export(arguments: argparse.Namespace) -> int:
+    """Write one development match's replay export and refresh the export index.
+
+    The split is checked first, from identifiers alone, so a held-out match's
+    event file is never opened.
+    """
+    match_id = MatchId(arguments.match)
+    require_development([match_id], split_buckets(arguments.split_file))
+    configuration = load_corpus(arguments.corpus)
+    raw_directory: Path = arguments.raw_directory
+    catalog = load_catalog(configuration, raw_directory)
+    record = load_match_records(configuration, catalog, raw_directory, [match_id])[match_id]
+    events_path = (
+        raw_directory
+        / "statsbomb-open-data"
+        / configuration.source_commit
+        / "data/events"
+        / f"{match_id}.json"
+    )
+    if not events_path.exists():
+        raise ValueError(f"no event file for match {match_id} at {events_path}")
+    export = build_match_export(load_events(events_path, match_id), record)
+
+    output_directory: Path = arguments.output_directory
+    output_directory.mkdir(parents=True, exist_ok=True)
+    output_path = output_directory / f"{match_id}.json"
+    output_path.write_text(json.dumps(export, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    index_path = output_directory / "index.json"
+    entries: dict[int, dict[str, object]] = {}
+    if index_path.exists():
+        for entry in json.loads(index_path.read_text(encoding="utf-8")):
+            entries[int(entry["id"])] = entry
+    entries[match_id] = {
+        "id": match_id,
+        "date": record.match_date.isoformat(),
+        "competition": record.competition_name,
+        "home": record.home_team.name,
+        "away": record.away_team.name,
+    }
+    index_path.write_text(
+        json.dumps([entries[key] for key in sorted(entries)], indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    print(f"Wrote {output_path} ({len(cast(list[object], export['cards']))} cards)")
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """Choose concrete adapters and run the application.
 
@@ -664,6 +721,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     if arguments.command == "data":
         try:
             return _run_data(arguments)
+        except (OSError, ValueError) as error:
+            parser.error(str(error))
+    if arguments.command == "export":
+        try:
+            return _run_export(arguments)
         except (OSError, ValueError) as error:
             parser.error(str(error))
     if arguments.command != "replay":
@@ -691,13 +753,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(ATTRIBUTION)
         return 0
     events_by_identifier = {event.identifier: event for event in events}
-    shifts = list(replay(events, AttackingSideShiftDetector(SideShiftSettings())))
-    bursts = list(replay(events, AttackingBurstDetector(BurstSettings())))
-    # One card stream in replay order; at a shared trigger, the burst comes first.
-    cards: list[AttackingSideShift | AttackingBurst] = sorted(
-        [*bursts, *shifts],
-        key=lambda card: events_by_identifier[card.trigger_event_id].sequence,
-    )
+    cards = build_card_stream(events)
     if not cards:
         print("No cards.")
     for card in cards:
