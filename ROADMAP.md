@@ -92,6 +92,8 @@ Ingestion runs in waves: Premier League 2015/16 first, then the rest of core bre
 
 **Development warehouse restored (2026-09-28):** all 800 development matches were verified and normalized from the pinned source in this checkout; the warehouse contains no held-out matches. See [increment 12](docs/increments/12-development-restoration.md).
 
+**Replay path aligned (2026-09-28):** `regista replay --match` now reads from the pinned `data/raw/` corpus by default. The existing `--events-dir` option still accepts an explicit event directory.
+
 Research, on development data only (each piece of research is written up as a research note; see [docs/research/TEMPLATE.md](docs/research/TEMPLATE.md)):
 
 7. Explore the development data. First note (2026-09-27): [research note 05](docs/research/05-territory-and-threat.md), territory versus threat in 10-minute windows. Retrospective; no detector change.

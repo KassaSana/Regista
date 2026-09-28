@@ -42,7 +42,6 @@ from regista.templates import render_attacking_side_shift, render_clock, render_
 from regista.warehouse.builder import IngestRun, WarehouseBuilder
 from regista.warehouse.research import fingerprint, quality_report, snapshot_facts
 
-DEFAULT_EVENTS_DIRECTORY = Path("data/statsbomb/data/events")
 DEFAULT_WAREHOUSE = Path("data/warehouse/regista.duckdb")
 DEFAULT_QUALITY_DIRECTORY = Path("out/dq")
 DEFAULT_DOWNLOAD_REPORTS = Path("out/downloads")
@@ -80,8 +79,7 @@ def build_parser() -> argparse.ArgumentParser:
     replay_command.add_argument(
         "--events-dir",
         type=Path,
-        default=DEFAULT_EVENTS_DIRECTORY,
-        help=f"directory of StatsBomb event files (default: {DEFAULT_EVENTS_DIRECTORY})",
+        help="directory of event files (default: the pinned corpus raw directory)",
     )
     replay_command.add_argument(
         "--evidence",
@@ -657,7 +655,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     match_id = MatchId(arguments.match)
-    events_path: Path = arguments.events_dir / f"{match_id}.json"
+    events_directory: Path = arguments.events_dir or (
+        Path("data/raw/statsbomb-open-data")
+        / load_corpus(Path("catalog/corpus.toml")).source_commit
+        / "data/events"
+    )
+    events_path = events_directory / f"{match_id}.json"
     if not events_path.exists():
         parser.error(f"no event file for match {match_id} at {events_path}")
 

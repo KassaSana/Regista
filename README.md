@@ -1,6 +1,6 @@
 # Regista
 
-Last updated: 2026-09-27
+Last updated: 2026-09-28
 
 Regista is a match companion for soccer fans. It replays a match in time order,
 notices when something meaningful changes, explains it in one plain sentence,
@@ -32,8 +32,9 @@ uv run ruff format --check .
 uv run pyright
 ```
 
-`regista replay` reads `data/statsbomb/data/events/<match>.json` (override
-with `--events-dir`) and prints each card with its time, sentence, and
+`regista replay` reads the pinned corpus under
+`data/raw/statsbomb-open-data/<source-commit>/data/events/<match>.json`
+(override with `--events-dir`) and prints each card with its time, sentence, and
 supporting event identifiers. Add `--evidence` to see each card's channel
 table and every supporting entry with its coordinates instead.
 
@@ -75,7 +76,7 @@ already-inspected matches) is recorded in
 ```console
 uv run regista data download --competition 2 --season 27 --include-inspected
 uv run regista data download --competition 2 --season 27 --include-inspected --verify-only
-uv run regista replay --match 3753972 --events-dir data/raw/statsbomb-open-data/b0bc9f22dd77c206ddedc1d742893b3bbe64baec/data/events
+uv run regista replay --match 3753972
 ```
 
 Completed downloads are verified and reused. The append-only manifest is

@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from regista.cli import build_parser, main
+from regista.pipeline.catalog import load_corpus
 
 
 def statsbomb_record(index: int, minute: int, second: int, **extra: object) -> dict[str, object]:
@@ -58,6 +59,26 @@ def test_replay_of_a_quiet_match_says_so_with_attribution(
     exit_code = main(["replay", "--match", "1", "--events-dir", str(tmp_path)])
 
     assert exit_code == 0
+    assert capsys.readouterr().out == "No cards.\nData: StatsBomb\n"
+
+
+def test_replay_defaults_to_pinned_corpus_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    corpus = Path(__file__).resolve().parents[1] / "catalog/corpus.toml"
+    destination = tmp_path / "catalog/corpus.toml"
+    destination.parent.mkdir()
+    destination.write_bytes(corpus.read_bytes())
+    events = (
+        tmp_path
+        / "data/raw/statsbomb-open-data"
+        / load_corpus(corpus).source_commit
+        / "data/events"
+    )
+    write_match(events, [statsbomb_record(1, 0, 0), statsbomb_record(2, 30, 0)])
+    monkeypatch.chdir(tmp_path)
+
+    assert main(["replay", "--match", "1"]) == 0
     assert capsys.readouterr().out == "No cards.\nData: StatsBomb\n"
 
 
