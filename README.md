@@ -4,7 +4,9 @@ Last updated: 2026-09-28
 
 Regista is a match companion for soccer fans. It replays a match in time order,
 notices when something meaningful changes, explains it in one plain sentence,
-and shows the evidence behind it.
+and shows the evidence behind it. A thin MVP is complete: export a
+development match, replay it in a browser viewer, and open a light bulb for an
+insight and its evidence (see "Run the MVP" below).
 
 Phase 1 is done: a StatsBomb adapter, a replay engine, and the attacking-side
 shift detector turn a replayed match into cards with their supporting event
